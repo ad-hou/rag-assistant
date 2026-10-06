@@ -2,17 +2,31 @@
 
 Lancer : python -m uvicorn api.main:app --port 8000
 """
+from contextlib import asynccontextmanager
+
 import requests
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
 from src.generate import OLLAMA_URL, PROMPTS, answer
+from src.retrieve import retrieve
 
 # Reglage retenu apres comparaison (voir README) : code des exemples + prompt strict
 DEFAULT_COLLECTION = "fastapi_code"
 DEFAULT_PROMPT = "strict"
 
-app = FastAPI(title="Assistant RAG - documentation FastAPI")
+
+
+@asynccontextmanager
+async def lifespan(_app):
+    try:  # charge le modele d'embeddings et l'index au demarrage (sinon ~12 s a la 1re question)
+        retrieve("echauffement", 1, collection=DEFAULT_COLLECTION)
+    except Exception as e:  # index absent : l'API demarre quand meme
+        print(f"Echauffement impossible : {e}")
+    yield
+
+
+app = FastAPI(title="Assistant RAG - documentation FastAPI", lifespan=lifespan)
 
 
 class AskRequest(BaseModel):
