@@ -1,4 +1,4 @@
-# Assistant RAG sur la documentation FastAPI
+# Assistant RAG local : posez vos questions à vos documents
 
 Assistant de questions-réponses sur documents, **100 % local et gratuit** (Ollama, Chroma,
 Streamlit). Deux modes :
