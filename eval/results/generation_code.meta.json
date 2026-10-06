@@ -1,0 +1,8 @@
+{
+ "prompt": "base",
+ "k": 4,
+ "min_score": null,
+ "embed_model": "intfloat/multilingual-e5-small",
+ "collection": "fastapi_code",
+ "llm": "qwen2.5:7b-instruct"
+}

@@ -4,6 +4,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 DOCS_DIR = ROOT / "data" / "docs"
 CHROMA_DIR = ROOT / "chroma"
+CODE_DIR = ROOT / "data" / "docs_src"      # exemples de code references par les pages
 
 EMBED_MODEL = "intfloat/multilingual-e5-small"
 COLLECTION = "fastapi_docs"

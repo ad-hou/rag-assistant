@@ -1,6 +1,7 @@
 """Ingestion : lecture des .md, nettoyage, decoupage, embeddings, index Chroma.
 
 Usage : python -m src.ingest [--max-chars 1000] [--overlap 150] [--model ...] [--collection ...]
+        [--with-code]  (apres python -m src.fetch_code)
 """
 import argparse
 import re
@@ -8,11 +9,12 @@ import statistics
 import time
 from pathlib import Path
 
-from src.config import (CHROMA_DIR, COLLECTION, DOCS_DIR, EMBED_MODEL,
+from src.config import (CHROMA_DIR, CODE_DIR, COLLECTION, DOCS_DIR, EMBED_MODEL,
                         MAX_CHARS, OVERLAP, passage_prefix)
 
 FENCE = re.compile(r"^\s*```")
 INCLUDE = re.compile(r"^\s*\{\*.*\*\}\s*$")      # {* ../../docs_src/x.py *} : code non present
+CODE_REF = re.compile(r"docs_src/(\S+\.py)")
 ADMONITION = re.compile(r"^\s*///.*$")           # /// note | /// tip | ///
 IMAGE = re.compile(r"^\s*!\[.*?\]\(.*?\)\s*(\{.*\})?\s*$")
 HEADING = re.compile(r"^(#{1,6})\s+(.+?)\s*$")
@@ -21,15 +23,21 @@ FRONT_MATTER = re.compile(r"\A---\n.*?\n---\n", re.S)
 MIN_CHARS = 40
 
 
-def clean_markdown(text: str) -> str:
+def clean_markdown(text: str, code_dir: Path | None = None) -> str:
+    """code_dir : si fourni, remplace chaque {* ...docs_src/x.py *} par le code du fichier."""
     text = text.replace("\r\n", "\n")
     text = FRONT_MATTER.sub("", text, count=1)
     out, in_fence = [], False
     for line in text.split("\n"):
         if FENCE.match(line):
             in_fence = not in_fence
-        elif not in_fence and (INCLUDE.match(line) or ADMONITION.match(line)
-                               or IMAGE.match(line)):
+        elif not in_fence and INCLUDE.match(line):
+            ref = CODE_REF.search(line)
+            f = code_dir / ref.group(1) if code_dir and ref else None
+            if f is not None and f.exists():
+                out += ["```python", *f.read_text(encoding="utf-8").rstrip().splitlines(), "```"]
+            continue
+        elif not in_fence and (ADMONITION.match(line) or IMAGE.match(line)):
             continue
         out.append(line)
     return "\n".join(out)
@@ -126,9 +134,10 @@ def chunk_blocks(blocks, max_chars: int = MAX_CHARS, overlap: int = OVERLAP):
     return chunks
 
 
-def chunk_document(text: str, max_chars: int = MAX_CHARS, overlap: int = OVERLAP):
+def chunk_document(text: str, max_chars: int = MAX_CHARS, overlap: int = OVERLAP,
+                   code_dir: Path | None = None):
     """-> (titre, [(section, texte_du_chunk)])"""
-    sections = parse_sections(clean_markdown(text))
+    sections = parse_sections(clean_markdown(text, code_dir))
     title = sections[0][0].split(" > ")[0] if sections else ""
     out = []
     for path, blocks in sections:
@@ -139,11 +148,12 @@ def chunk_document(text: str, max_chars: int = MAX_CHARS, overlap: int = OVERLAP
 
 
 def load_chunks(docs_dir: Path = DOCS_DIR, max_chars: int = MAX_CHARS,
-                overlap: int = OVERLAP):
+                overlap: int = OVERLAP, code_dir: Path | None = None):
     chunks = []
     for f in sorted(Path(docs_dir).rglob("*.md")):
         source = f.relative_to(docs_dir).as_posix()
-        title, items = chunk_document(f.read_text(encoding="utf-8"), max_chars, overlap)
+        title, items = chunk_document(f.read_text(encoding="utf-8"), max_chars, overlap,
+                                      code_dir)
         for i, (section, text) in enumerate(items):
             chunks.append({"id": f"{source}::{i}", "source": source,
                            "title": title or f.stem, "section": section, "text": text})
@@ -156,9 +166,12 @@ def main():
     ap.add_argument("--overlap", type=int, default=OVERLAP)
     ap.add_argument("--model", default=EMBED_MODEL)
     ap.add_argument("--collection", default=COLLECTION)
+    ap.add_argument("--with-code", action="store_true",
+                    help="inclut le code des exemples (data/docs_src, voir src.fetch_code)")
     a = ap.parse_args()
 
-    chunks = load_chunks(DOCS_DIR, a.max_chars, a.overlap)
+    chunks = load_chunks(DOCS_DIR, a.max_chars, a.overlap,
+                         CODE_DIR if a.with_code else None)
     sizes = [len(c["text"]) for c in chunks]
     n_docs = len({c["source"] for c in chunks})
     print(f"{n_docs} documents -> {len(chunks)} passages "

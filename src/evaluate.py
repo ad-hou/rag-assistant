@@ -2,7 +2,8 @@
 
   python -m src.evaluate --retrieval                    # recherche seule (rapide, sans LLM)
   python -m src.evaluate --generation --tag base        # chaine complete (Ollama requis)
-  python -m src.evaluate --faith eval/faithfulness_sample.csv   # score de fidelite note a la main
+  python -m src.evaluate --faith eval/faithfulness_base.csv     # score de fidelite note
+  python -m src.evaluate --report base                          # bilan d'un run enregistre
 
 Reglages comparables : --k, --embed-model, --collection, --llm, --min-score, --tag.
 """
@@ -103,50 +104,84 @@ def pct(values, p):
     return s[int(p * (len(s) - 1))]
 
 
+def unsupported_code(answer, hits):
+    """True si la reponse contient un bloc de code dont une ligne n'est dans aucun passage."""
+    seen = {ln.strip() for h in hits for ln in h["text"].splitlines()}
+    for block in re.findall(r"```[^\n]*\n(.*?)```", answer, re.S):
+        for line in block.splitlines():
+            t = line.strip()
+            if len(t) > 3 and not t.startswith("#") and t not in seen:
+                return True
+    return False
+
+
+def summarize(rows, k, label):
+    inc = [r for r in rows if r["type"] == "in_corpus"]
+    off = [r for r in rows if r["type"] != "in_corpus"]
+    answered = [r for r in inc if not r["refused"]]
+    lat = [r["total_s"] for r in rows]
+    n = max(len(answered), 1)
+    bad_code = sum(unsupported_code(r["answer"], r["sources"]) for r in answered)
+    print(f"\nChaine complete [{label}] ({len(inc)} valides, {len(off)} hors corpus), k={k}")
+    print(f"  Refus correct (hors corpus) : {sum(r['refused'] for r in off) / len(off):.1%}")
+    print(f"  Faux refus (questions valides) : {1 - len(answered) / len(inc):.1%}")
+    print(f"  Reponses avec citation valide : "
+          f"{sum(valid_citation(r['answer'], k) for r in answered) / n:.1%}"
+          f" ({len(answered)} reponses)")
+    print(f"  Reponses avec code absent des passages : {bad_code / n:.1%} "
+          f"({bad_code}/{len(answered)})")
+    print(f"  Recall@{k} (page attendue dans les passages fournis) : "
+          f"{sum(first_rank(r['sources'], set(r['gold'])) > 0 for r in inc) / len(inc):.1%}")
+    print(f"  Latence de bout en bout : mediane {statistics.median(lat):.1f} s, "
+          f"p95 {pct(lat, 0.95):.1f} s")
+
+
+def write_faith_csv(rows, tag, panel=None):
+    answered = [r for r in rows if r["type"] == "in_corpus" and not r["refused"]]
+    if panel:
+        with open(panel, encoding="utf-8-sig", newline="") as f:
+            ids = [x["id"] for x in csv.DictReader(f, delimiter=";")]
+        by_id = {r["id"]: r for r in answered}
+        sample = [by_id[i] for i in ids if i in by_id]
+        print(f"\nPanel de fidelite : {len(sample)}/{len(ids)} questions du panel ont recu une reponse")
+    else:
+        sample = random.Random(0).sample(answered, min(15, len(answered)))
+    path = ROOT / "eval" / f"faithfulness_{tag}.csv"
+    with open(path, "w", encoding="utf-8-sig", newline="") as f:
+        w = csv.writer(f, delimiter=";")
+        w.writerow(["id", "question", "reponse", "passages", "fidele (1/0)", "commentaire"])
+        for r in sample:
+            ctx = "\n---\n".join(f"[{i}] {h['text']}" for i, h in enumerate(r["sources"], 1))
+            w.writerow([r["id"], r["question"], r["answer"], ctx, "", ""])
+    print(f"A noter : {path.relative_to(ROOT)}")
+
+
 def run_generation(args, questions):
-    from src.generate import REFUSAL, answer, ask_llm
+    from src.generate import answer, ask_llm
     retrieve("echauffement", 1, args.embed_model, args.collection)
     ask_llm([{"role": "user", "content": "ok"}], args.llm)  # charge le modele en VRAM
     rows = []
     for i, q in enumerate(questions, 1):
         r = answer(q["question"], args.k, args.min_score, args.llm,
-                   args.embed_model, args.collection)
+                   args.embed_model, args.collection, args.prompt)
         r.update(id=q["id"], type=q["type"], gold=q["gold"])
         rows.append(r)
         print(f"  {i}/{len(questions)} {q['id']} {r['total_s']:.1f} s "
               f"{'REFUS' if r['refused'] else 'reponse'}", flush=True)
-
-    inc = [r for r in rows if r["type"] == "in_corpus"]
-    off = [r for r in rows if r["type"] != "in_corpus"]
-    answered = [r for r in inc if not r["refused"]]
-    lat = [r["total_s"] for r in rows]
-    print(f"\nChaine complete ({len(inc)} valides, {len(off)} hors corpus), "
-          f"LLM {args.llm}, k={args.k}, seuil {args.min_score}")
-    print(f"  Refus correct (hors corpus) : {sum(r['refused'] for r in off) / len(off):.1%}")
-    print(f"  Faux refus (questions valides) : {1 - len(answered) / len(inc):.1%}")
-    print(f"  Reponses avec citation valide : "
-          f"{sum(valid_citation(r['answer'], args.k) for r in answered) / max(len(answered), 1):.1%}"
-          f" ({len(answered)} reponses)")
-    print(f"  Recall@{args.k} (page attendue dans les passages fournis) : "
-          f"{sum(first_rank(r['sources'], set(r['gold'])) > 0 for r in inc) / len(inc):.1%}")
-    print(f"  Latence de bout en bout : mediane {statistics.median(lat):.1f} s, "
-          f"p95 {pct(lat, 0.95):.1f} s")
-
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / f"generation_{args.tag}.json").write_text(
         json.dumps(rows, ensure_ascii=False, indent=1), encoding="utf-8")
+    (OUT / f"generation_{args.tag}.meta.json").write_text(json.dumps(
+        {k: v for k, v in vars(args).items() if k in
+         ("k", "min_score", "embed_model", "collection", "llm", "prompt")}, indent=1),
+        encoding="utf-8")
+    summarize(rows, args.k, args.tag)
+    write_faith_csv(rows, args.tag, args.panel)
 
-    pool = [r for r in answered if r["answer"].strip() != REFUSAL]
-    sample = random.Random(0).sample(pool, min(15, len(pool)))
-    with open(ROOT / "eval" / f"faithfulness_{args.tag}.csv", "w", encoding="utf-8-sig",
-              newline="") as f:
-        w = csv.writer(f, delimiter=";")
-        w.writerow(["id", "question", "reponse", "passages", "fidele (1/0)"])
-        for r in sample:
-            ctx = "\n---\n".join(f"[{i}] {h['text']}" for i, h in enumerate(r["sources"], 1))
-            w.writerow([r["id"], r["question"], r["answer"], ctx, ""])
-    print(f"\nA noter a la main : eval/faithfulness_{args.tag}.csv "
-          f"(colonne 'fidele (1/0)'), puis --faith")
+
+def run_report(args):
+    rows = json.loads((OUT / f"generation_{args.report}.json").read_text(encoding="utf-8"))
+    summarize(rows, len(rows[0]["sources"]), args.report)
 
 
 def run_faith(path):
@@ -162,6 +197,9 @@ def main():
     ap.add_argument("--retrieval", action="store_true")
     ap.add_argument("--generation", action="store_true")
     ap.add_argument("--faith", metavar="CSV")
+    ap.add_argument("--report", metavar="TAG", help="recalcule le bilan d'un run enregistre")
+    ap.add_argument("--prompt", default="base", choices=["base", "strict"])
+    ap.add_argument("--panel", metavar="CSV", help="memes questions de fidelite qu'un run precedent")
     ap.add_argument("--tag", default="base")
     ap.add_argument("--k", type=int, default=4)
     ap.add_argument("--min-score", type=float, default=None)
@@ -173,6 +211,8 @@ def main():
 
     if a.faith:
         return run_faith(a.faith)
+    if a.report:
+        return run_report(a)
     qs = load_questions()
     if a.limit:
         qs = qs[:a.limit]

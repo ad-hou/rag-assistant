@@ -25,11 +25,19 @@ SYSTEM = (
 )
 
 
-def build_messages(question: str, hits: list):
+SYSTEM_STRICT = SYSTEM + (
+    "\n- N'écris jamais de code qui ne figure pas mot pour mot dans les extraits. "
+    "S'il n'y a pas de code dans les extraits, explique en texte sans en inventer."
+    "\n- Termine chaque phrase qui affirme un fait par au moins une citation [n]."
+)
+PROMPTS = {"base": SYSTEM, "strict": SYSTEM_STRICT}
+
+
+def build_messages(question: str, hits: list, prompt: str = "base"):
     ctx = "\n\n".join(f"[{i}] ({h['source']} > {h['section']})\n{h['text']}"
                       for i, h in enumerate(hits, 1))
     user = f"Extraits :\n{ctx}\n\nQuestion : {question}"
-    return [{"role": "system", "content": SYSTEM}, {"role": "user", "content": user}]
+    return [{"role": "system", "content": PROMPTS[prompt]}, {"role": "user", "content": user}]
 
 
 def ask_llm(messages: list, model: str = LLM_MODEL) -> str:
@@ -46,14 +54,14 @@ def ask_llm(messages: list, model: str = LLM_MODEL) -> str:
 
 def answer(question: str, k: int = 4, min_score: float | None = None,
            llm: str = LLM_MODEL, embed_model: str = EMBED_MODEL,
-           collection: str = COLLECTION) -> dict:
+           collection: str = COLLECTION, prompt: str = "base") -> dict:
     t0 = time.perf_counter()
     hits = retrieve(question, k, embed_model, collection)
     t1 = time.perf_counter()
     if min_score is not None and hits[0]["score"] < min_score:
         text = REFUSAL  # refus sans appeler le modele
     else:
-        text = ask_llm(build_messages(question, hits), llm)
+        text = ask_llm(build_messages(question, hits, prompt), llm)
     t2 = time.perf_counter()
     return {"question": question, "answer": text, "refused": REFUSAL in text,
             "sources": hits, "retrieval_s": t1 - t0, "generation_s": t2 - t1,
@@ -67,9 +75,12 @@ def main():
     ap.add_argument("-k", type=int, default=4)
     ap.add_argument("--min-score", type=float, default=None)
     ap.add_argument("--llm", default=LLM_MODEL)
+    ap.add_argument("--collection", default=COLLECTION)
+    ap.add_argument("--prompt", default="base", choices=list(PROMPTS))
     a = ap.parse_args()
 
-    r = answer(a.question, a.k, a.min_score, a.llm)
+    r = answer(a.question, a.k, a.min_score, a.llm, collection=a.collection,
+               prompt=a.prompt)
     print(f"\n{r['answer']}\n\nSources :")
     for i, h in enumerate(r["sources"], 1):
         print(f"  [{i}] {h['source']} > {h['section']}  (score {h['score']:.3f})")
