@@ -1,11 +1,17 @@
 # Assistant RAG sur la documentation FastAPI
 
-Pose une question en français sur FastAPI : l'assistant retrouve les passages pertinents du
-tutoriel officiel (51 pages, en anglais), répond **en français avec des citations [n]**, et
-**refuse** quand la réponse n'est pas dans les documents. Tout tourne en local et gratuitement
-(Ollama, Chroma, Streamlit).
+Assistant de questions-réponses sur documents, **100 % local et gratuit** (Ollama, Chroma,
+Streamlit). Deux modes :
 
-![Démo](docs/demo.png)
+- **Tutoriel FastAPI** : corpus intégré (51 pages en anglais), questions en français, réponses
+  avec **citations [n]**, **refus** quand la réponse n'est pas dans les documents. C'est sur ce
+  corpus que la qualité est mesurée (section Résultats).
+- **Mes documents** : dépôt de PDF, Markdown ou TXT (10 fichiers, 15 Mo chacun) ; l'assistant
+  répond uniquement à partir de ces fichiers et cite le document et la page. Les index
+  « Mes documents » sont temporaires : supprimés au changement de documents et au redémarrage
+  de l'API. **La qualité n'est pas mesurée sur ce mode.**
+
+![Démo](docs/demo.gif)
 
 ## Comment ça marche
 
@@ -23,7 +29,8 @@ flowchart LR
 - **Code des exemples** : le tutoriel charge ses exemples depuis un dossier `docs_src/`.
   `src/fetch_code.py` récupère les 173 fichiers référencés et `src/ingest.py` les insère dans
   les passages (voir « Ce que la comparaison a montré »).
-- **API** : FastAPI (`POST /ask`, `GET /health`). **Interface** : Streamlit.
+- **API** : FastAPI (`POST /ask`, `POST /documents`, `DELETE /documents/{collection}`, `GET /health`).
+  **Interface** : Streamlit.
 
 ## Résultats
 
@@ -78,7 +85,10 @@ Réglage retenu : **C** (utilisé par l'API et l'interface).
   hors sujet sur les codes HTTP, fonction montrée à la place d'une classe).
 - **Questions de définition faibles** (« qu'est-ce que FastAPI ? ») : le tutoriel n'a pas de
   page de présentation, la réponse est approximative.
-- Un seul corpus (51 pages), pas de reranking, pas de conversation à plusieurs tours, fichiers
+- **Mode « Mes documents » non évalué** : pas de jeu de questions, pas de mesure de fidélité ;
+  PDF scannés non gérés (pas d'OCR) ; les questions larges (« résume ce document ») sont mal
+  adaptées à une recherche des 4 meilleurs passages.
+- Corpus mesuré : un seul (51 pages), pas de reranking, pas de conversation à plusieurs tours, fichiers
   d'exemples insérés en entier (pas les lignes mises en avant).
 - Mesures faites sur une seule machine ; les latences dépendent du GPU.
 
@@ -111,15 +121,16 @@ Pour reconstruire le réglage A : `python -m src.ingest` (collection `fastapi_do
 ## Structure
 
 ```
-api/main.py         API (POST /ask, GET /health)
+api/main.py         API (/ask, /documents, /health)
 app.py              interface Streamlit
 src/ingest.py       nettoyage, découpage, embeddings, index Chroma
+src/documents.py    dépôt de fichiers utilisateur (PDF/MD/TXT) : lecture, découpage, index temporaire
 src/fetch_code.py   récupération des exemples de code référencés
 src/retrieve.py     recherche (CLI : python -m src.retrieve "question")
 src/generate.py     prompts, appel Ollama, refus
 src/evaluate.py     Recall@k, MRR, refus, citations, code inventé, latence
 eval/               questions, résultats, notation de fidélité
-tests/              21 tests (découpage, API, interface, évaluation)
+tests/              35 tests (découpage, documents, API, interface, évaluation)
 ```
 
 Corpus : documentation FastAPI, licence MIT (`data/docs/LICENSE-fastapi`).

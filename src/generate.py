@@ -30,7 +30,13 @@ SYSTEM_STRICT = SYSTEM + (
     "S'il n'y a pas de code dans les extraits, explique en texte sans en inventer."
     "\n- Termine chaque phrase qui affirme un fait par au moins une citation [n]."
 )
-PROMPTS = {"base": SYSTEM, "strict": SYSTEM_STRICT}
+# Documents de l'utilisateur : meme regles, sujet et langue generiques
+SYSTEM_GENERIC = (SYSTEM_STRICT
+                  .replace("sur la documentation FastAPI",
+                           "à partir d'extraits de documents fournis par l'utilisateur")
+                  .replace("Réponds toujours en français",
+                           "Réponds dans la langue de la question (français par défaut)"))
+PROMPTS = {"base": SYSTEM, "strict": SYSTEM_STRICT, "generic": SYSTEM_GENERIC}
 
 
 def build_messages(question: str, hits: list, prompt: str = "base"):

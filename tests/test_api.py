@@ -37,3 +37,40 @@ def test_llm_down_gives_503(monkeypatch):
 
     monkeypatch.setattr(main, "answer", boom)
     assert client.post("/ask", json={"question": "Une vraie question"}).status_code == 503
+
+
+def test_upload_and_delete_documents(monkeypatch):
+    monkeypatch.setattr(main, "ingest_files", lambda files: {
+        "collection": "user_ab12cd34", "documents": [n for n, _ in files], "passages": 5})
+    r = client.post("/documents", files=[("files", ("a.txt", b"contenu", "text/plain"))])
+    assert r.status_code == 200 and r.json()["collection"] == "user_ab12cd34"
+    assert r.json()["documents"] == ["a.txt"]
+    monkeypatch.setattr(main, "delete_collection", lambda name: None)
+    assert client.delete("/documents/user_ab12cd34").status_code == 204
+
+
+def test_cannot_delete_the_demo_collection():
+    assert client.delete("/documents/fastapi_code").status_code == 422
+
+
+def test_upload_rejected_gives_422(monkeypatch):
+    def refuse(files):
+        raise main.DocumentError("format non pris en charge")
+
+    monkeypatch.setattr(main, "ingest_files", refuse)
+    r = client.post("/documents", files=[("files", ("a.png", b"x", "image/png"))])
+    assert r.status_code == 422 and "format" in r.json()["detail"]
+
+
+def test_user_collection_uses_generic_prompt(monkeypatch):
+    seen = {}
+    monkeypatch.setattr(main, "collection_exists", lambda name: True)
+    monkeypatch.setattr(main, "answer", lambda q, **kw: seen.update(kw) or FAKE)
+    r = client.post("/ask", json={"question": "Une vraie question", "collection": "user_ab12cd34"})
+    assert r.status_code == 200 and seen["prompt"] == "generic"
+
+
+def test_missing_user_collection_gives_404(monkeypatch):
+    monkeypatch.setattr(main, "collection_exists", lambda name: False)
+    r = client.post("/ask", json={"question": "Une vraie question", "collection": "user_zzzzzzzz"})
+    assert r.status_code == 404

@@ -5,9 +5,11 @@ Lancer : python -m uvicorn api.main:app --port 8000
 from contextlib import asynccontextmanager
 
 import requests
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile
 from pydantic import BaseModel, Field
 
+from src.documents import (PREFIX, DocumentError, collection_exists, delete_collection,
+                           ingest_files, purge_user_collections)
 from src.generate import OLLAMA_URL, PROMPTS, answer
 from src.retrieve import retrieve
 
@@ -19,6 +21,10 @@ DEFAULT_PROMPT = "strict"
 
 @asynccontextmanager
 async def lifespan(_app):
+    try:
+        purge_user_collections()  # les documents d'une session precedente ne sont pas conserves
+    except Exception as e:
+        print(f"Nettoyage impossible : {e}")
     try:  # charge le modele d'embeddings et l'index au demarrage (sinon ~12 s a la 1re question)
         retrieve("echauffement", 1, collection=DEFAULT_COLLECTION)
     except Exception as e:  # index absent : l'API demarre quand meme
@@ -44,6 +50,12 @@ class Source(BaseModel):
     text: str
 
 
+class DocumentsResponse(BaseModel):
+    collection: str
+    documents: list[str]
+    passages: int
+
+
 class AskResponse(BaseModel):
     answer: str
     refused: bool
@@ -61,12 +73,35 @@ def health():
         return {"status": "degraded", "ollama": False}
 
 
+@app.post("/documents", response_model=DocumentsResponse)
+def upload_documents(files: list[UploadFile]):
+    """Indexe des PDF / Markdown / texte dans une collection temporaire `user_xxxxxxxx`."""
+    try:
+        return ingest_files([(f.filename or "document", f.file.read()) for f in files])
+    except DocumentError as e:
+        raise HTTPException(422, str(e)) from e
+
+
+@app.delete("/documents/{collection}", status_code=204)
+def remove_documents(collection: str):
+    try:
+        delete_collection(collection)
+    except DocumentError as e:
+        raise HTTPException(422, str(e)) from e
+
+
 @app.post("/ask", response_model=AskResponse)
 def ask(req: AskRequest):
     if req.prompt not in PROMPTS:
         raise HTTPException(422, f"prompt inconnu : {req.prompt}")
+    prompt = req.prompt
+    if req.collection.startswith(PREFIX):
+        if not collection_exists(req.collection):
+            raise HTTPException(404, "documents introuvables : réindexez-les")
+        if prompt == "strict":
+            prompt = "generic"  # prompt sans mention de FastAPI pour les documents utilisateur
     try:
-        r = answer(req.question, k=req.k, collection=req.collection, prompt=req.prompt)
+        r = answer(req.question, k=req.k, collection=req.collection, prompt=prompt)
     except RuntimeError as e:  # Ollama injoignable
         raise HTTPException(503, str(e)) from e
     return AskResponse(

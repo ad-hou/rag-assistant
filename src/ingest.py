@@ -160,6 +160,36 @@ def load_chunks(docs_dir: Path = DOCS_DIR, max_chars: int = MAX_CHARS,
     return chunks
 
 
+def index_chunks(chunks: list, model_name: str = EMBED_MODEL, collection: str = COLLECTION,
+                 verbose: bool = False) -> int:
+    """Embeddings + ecriture dans Chroma (la collection est recreee). -> nombre de passages."""
+    import chromadb
+
+    from src.retrieve import _model
+
+    pre = passage_prefix(model_name)
+    texts = [f"{pre}{c['section']}\n{c['text']}" for c in chunks]
+    t0 = time.time()
+    emb = _model(model_name).encode(texts, batch_size=32, normalize_embeddings=True,
+                                    show_progress_bar=verbose)
+    if verbose:
+        print(f"embeddings : {time.time() - t0:.1f} s, dimension {emb.shape[1]}")
+    client = chromadb.PersistentClient(path=str(CHROMA_DIR))
+    try:
+        client.delete_collection(collection)
+    except Exception:
+        pass
+    col = client.create_collection(collection, configuration={"hnsw": {"space": "cosine"}})
+    for i in range(0, len(chunks), 256):
+        part = chunks[i:i + 256]
+        col.add(ids=[c["id"] for c in part],
+                embeddings=emb[i:i + 256].tolist(),
+                documents=[c["text"] for c in part],
+                metadatas=[{"source": c["source"], "title": c["title"],
+                            "section": c["section"]} for c in part])
+    return col.count()
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--max-chars", type=int, default=MAX_CHARS)
@@ -178,32 +208,8 @@ def main():
           f"(taille moyenne {statistics.mean(sizes):.0f}, mediane {statistics.median(sizes):.0f}, "
           f"max {max(sizes)} caracteres)")
 
-    from sentence_transformers import SentenceTransformer
-    import chromadb
-
-    model = SentenceTransformer(a.model)
-    pre = passage_prefix(a.model)
-    texts = [f"{pre}{c['section']}\n{c['text']}" for c in chunks]
-    t0 = time.time()
-    emb = model.encode(texts, batch_size=32, normalize_embeddings=True,
-                       show_progress_bar=True)
-    print(f"embeddings : {time.time() - t0:.1f} s, dimension {emb.shape[1]}")
-
-    client = chromadb.PersistentClient(path=str(CHROMA_DIR))
-    try:
-        client.delete_collection(a.collection)
-    except Exception:
-        pass
-    col = client.create_collection(a.collection,
-                                   configuration={"hnsw": {"space": "cosine"}})
-    for i in range(0, len(chunks), 256):
-        part = chunks[i:i + 256]
-        col.add(ids=[c["id"] for c in part],
-                embeddings=emb[i:i + 256].tolist(),
-                documents=[c["text"] for c in part],
-                metadatas=[{"source": c["source"], "title": c["title"],
-                            "section": c["section"]} for c in part])
-    print(f"index '{a.collection}' : {col.count()} passages dans {CHROMA_DIR}")
+    n = index_chunks(chunks, a.model, a.collection, verbose=True)
+    print(f"index '{a.collection}' : {n} passages dans {CHROMA_DIR}")
 
 
 if __name__ == "__main__":
