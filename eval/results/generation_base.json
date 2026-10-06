@@ -1,0 +1,2089 @@
+[
+ {
+  "question": "Comment déclarer un paramètre de requête optionnel ?",
+  "answer": "Vous pouvez déclarer un paramètre de requête optionnel en lui assignant une valeur par défaut `None`, comme indiqué dans l'extrait [1] :\n\n```python\nasync def read_item(item_id: str, q: str = None):\n    ...\n```\n\nIci, le paramètre `q` est optionnel et prendra la valeur `None` si aucun ne est fourni.",
+  "refused": false,
+  "sources": [
+   {
+    "score": 0.8651552200317383,
+    "source": "tutorial/query-params.md",
+    "section": "Query Parameters > Optional parameters",
+    "text": "The same way, you can declare optional query parameters, by setting their default to `None`:\n\nIn this case, the function parameter `q` will be optional, and will be `None` by default.\n\nAlso notice that **FastAPI** is smart enough to notice that the path parameter `item_id` is a path parameter and `q` is not, so, it's a query parameter."
+   },
+   {
+    "score": 0.8441447019577026,
+    "source": "tutorial/query-params-str-validations.md",
+    "section": "Query Parameters and String Validations > Declare more metadata",
+    "text": "You can add more information about the parameter.\n\nThat information will be included in the generated OpenAPI and used by the documentation user interfaces and external tools.\n\nKeep in mind that different tools might have different levels of OpenAPI support.\n\nSome of them might not show all the extra information declared yet, although in most of the cases, the missing feature is already planned for development.\n\nYou can add a `title`:\n\nAnd a `description`:"
+   },
+   {
+    "score": 0.8393903970718384,
+    "source": "tutorial/body-multiple-params.md",
+    "section": "Body - Multiple Parameters > Mix `Path`, `Query` and body parameters",
+    "text": "First, of course, you can mix `Path`, `Query` and request body parameter declarations freely and **FastAPI** will know what to do.\n\nAnd you can also declare body parameters as optional, by setting the default to `None`:\n\nNotice that, in this case, the `item` that would be taken from the body is optional. As it has a `None` default value."
+   },
+   {
+    "score": 0.8384820818901062,
+    "source": "tutorial/query-params-str-validations.md",
+    "section": "Query Parameters and String Validations > Default values",
+    "text": "You can, of course, use default values other than `None`.\n\nLet's say that you want to declare the `q` query parameter to have a `min_length` of `3`, and to have a default value of `\"fixedquery\"`:\n\nHaving a default value of any type, including `None`, makes the parameter optional (not required)."
+   }
+  ],
+  "retrieval_s": 0.013146600000254693,
+  "generation_s": 3.109945499998503,
+  "total_s": 3.1230920999987575,
+  "id": "q01",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/query-params.md"
+  ]
+ },
+ {
+  "question": "Comment imposer une longueur minimale à un paramètre de requête ?",
+  "answer": "Pour imposer une longueur minimale à un paramètre de requête, vous pouvez utiliser la propriété `min_length` dans `Annotated`. Par exemple :\n\n```python\nfrom fastapi import Query\n\nasync def func(q: Annotated[str, Query(min_length=3)]):\n    ...\n```\n\nCela assure que la chaîne `q` a au moins 3 caractères. Si la longueur est inférieure à 3, FastAPI fournira un message d'erreur clair au client. [1]",
+  "refused": false,
+  "sources": [
+   {
+    "score": 0.8582932949066162,
+    "source": "tutorial/query-params-str-validations.md",
+    "section": "Query Parameters and String Validations > Add more validations",
+    "text": "You can also add a parameter `min_length`:"
+   },
+   {
+    "score": 0.8325067758560181,
+    "source": "tutorial/query-params-str-validations.md",
+    "section": "Query Parameters and String Validations > Add `Query` to `Annotated` in the `q` parameter",
+    "text": "Now that we have this `Annotated` where we can put more information (in this case some additional validation), add `Query` inside of `Annotated`, and set the parameter `max_length` to `50`:\n\nNotice that the default value is still `None`, so the parameter is still optional.\n\nBut now, having `Query(max_length=50)` inside of `Annotated`, we are telling FastAPI that we want it to have **additional validation** for this value, we want it to have maximum 50 characters. 😎\n\nHere we are using `Query()` because this is a **query parameter**. Later we will see others like `Path()`, `Body()`, `Header()`, and `Cookie()`, that also accept the same arguments as `Query()`.\n\nFastAPI will now:\n\n* **Validate** the data making sure that the max length is 50 characters\n* Show a **clear error** for the client when the data is not valid\n* **Document** the parameter in the OpenAPI schema *path operation* (so it will show up in the **automatic docs UI**)"
+   },
+   {
+    "score": 0.8285315632820129,
+    "source": "tutorial/query-params.md",
+    "section": "Query Parameters > Required query parameters",
+    "text": "...this would work:\n\n```JSON\n{\n    \"item_id\": \"foo-item\",\n    \"needy\": \"sooooneedy\"\n}\n```\n\nAnd of course, you can define some parameters as required, some as having a default value, and some entirely optional:\n\nIn this case, there are 3 query parameters:\n\n* `needy`, a required `str`.\n* `skip`, an `int` with a default value of `0`.\n* `limit`, an optional `int`.\n\nYou could also use `Enum`s the same way as with [Path Parameters](path-params.md#predefined-values)."
+   },
+   {
+    "score": 0.8243721723556519,
+    "source": "tutorial/query-params-str-validations.md",
+    "section": "Query Parameters and String Validations > Default values",
+    "text": "You can, of course, use default values other than `None`.\n\nLet's say that you want to declare the `q` query parameter to have a `min_length` of `3`, and to have a default value of `\"fixedquery\"`:\n\nHaving a default value of any type, including `None`, makes the parameter optional (not required)."
+   }
+  ],
+  "retrieval_s": 0.012933899999552523,
+  "generation_s": 3.5210477000000537,
+  "total_s": 3.5339815999996063,
+  "id": "q02",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/query-params-str-validations.md"
+  ]
+ },
+ {
+  "question": "Comment valider qu'un paramètre de chemin est un entier supérieur ou égal à 1 ?",
+  "answer": "Pour valider qu'un paramètre de chemin est un entier supérieur ou égal à 1, vous pouvez utiliser la validation `ge=1` avec le décorateur `Path`. Par exemple :\n\n```python\nfrom fastapi import FastAPI, Path\n\napp = FastAPI()\n\n@app.get(\"/items/{item_id}\")\nasync def read_item(item_id: int = Path(..., ge=1)):\n    return {\"item_id\": item_id}\n```\n\nIci, `item_id` doit être un entier supérieur ou égal à 1 [1].",
+  "refused": false,
+  "sources": [
+   {
+    "score": 0.8615314960479736,
+    "source": "tutorial/path-params-numeric-validations.md",
+    "section": "Path Parameters and Numeric Validations > Number validations: greater than or equal",
+    "text": "With `Query` and `Path` (and others you'll see later) you can declare number constraints.\n\nHere, with `ge=1`, `item_id` will need to be an integer number \"`g`reater than or `e`qual\" to `1`."
+   },
+   {
+    "score": 0.8594388365745544,
+    "source": "tutorial/path-params-numeric-validations.md",
+    "section": "Path Parameters and Numeric Validations > Recap",
+    "text": "With `Query`, `Path` (and others you haven't seen yet) you can declare metadata and string validations in the same ways as with [Query Parameters and String Validations](query-params-str-validations.md).\n\nAnd you can also declare numeric validations:\n\n* `gt`: `g`reater `t`han\n* `ge`: `g`reater than or `e`qual\n* `lt`: `l`ess `t`han\n* `le`: `l`ess than or `e`qual\n\n`Query`, `Path`, and other classes you will see later are subclasses of a common `Param` class.\n\nAll of them share the same parameters for additional validation and metadata you have seen.\n\nWhen you import `Query`, `Path` and others from `fastapi`, they are actually functions.\n\nThat when called, return instances of classes of the same name.\n\nSo, you import `Query`, which is a function. And when you call it, it returns an instance of a class also named `Query`.\n\nThese functions are there (instead of just using the classes directly) so that your editor doesn't mark errors about their types."
+   },
+   {
+    "score": 0.8533272743225098,
+    "source": "tutorial/path-params-numeric-validations.md",
+    "section": "Path Parameters and Numeric Validations > Number validations: greater than and less than or equal",
+    "text": "The same applies for:\n\n* `gt`: `g`reater `t`han\n* `le`: `l`ess than or `e`qual"
+   },
+   {
+    "score": 0.8521735072135925,
+    "source": "tutorial/path-params-numeric-validations.md",
+    "section": "Path Parameters and Numeric Validations > Order the parameters as you need, tricks > Better with `Annotated`",
+    "text": "Keep in mind that if you use `Annotated`, as you are not using function parameter default values, you won't have this problem, and you probably won't need to use `*`."
+   }
+  ],
+  "retrieval_s": 0.01265369999964605,
+  "generation_s": 3.5973556999997527,
+  "total_s": 3.6100093999993987,
+  "id": "q03",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/path-params-numeric-validations.md"
+  ]
+ },
+ {
+  "question": "Comment déclarer le type d'un paramètre de chemin ?",
+  "answer": "Vous pouvez déclarer le type d'un paramètre de chemin en utilisant des annotations de type standard Python, comme illustré dans l'extrait [4] :\n\n```python\ndef read_item(item_id: int, q: str = None):\n    ...\n```\n\nIci, `item_id` est déclaré comme étant de type `int`. Cela vous donne du support d'édition dans votre fonction, avec des vérifications d'erreur, des complétions, etc.",
+  "refused": false,
+  "sources": [
+   {
+    "score": 0.8684282898902893,
+    "source": "tutorial/path-params.md",
+    "section": "Path Parameters > Predefined values > Declare a *path parameter*",
+    "text": "Then create a *path parameter* with a type annotation using the enum class you created (`ModelName`):"
+   },
+   {
+    "score": 0.8545548915863037,
+    "source": "tutorial/path-params-numeric-validations.md",
+    "section": "Path Parameters and Numeric Validations > Recap",
+    "text": "With `Query`, `Path` (and others you haven't seen yet) you can declare metadata and string validations in the same ways as with [Query Parameters and String Validations](query-params-str-validations.md).\n\nAnd you can also declare numeric validations:\n\n* `gt`: `g`reater `t`han\n* `ge`: `g`reater than or `e`qual\n* `lt`: `l`ess `t`han\n* `le`: `l`ess than or `e`qual\n\n`Query`, `Path`, and other classes you will see later are subclasses of a common `Param` class.\n\nAll of them share the same parameters for additional validation and metadata you have seen.\n\nWhen you import `Query`, `Path` and others from `fastapi`, they are actually functions.\n\nThat when called, return instances of classes of the same name.\n\nSo, you import `Query`, which is a function. And when you call it, it returns an instance of a class also named `Query`.\n\nThese functions are there (instead of just using the classes directly) so that your editor doesn't mark errors about their types."
+   },
+   {
+    "score": 0.8531509041786194,
+    "source": "tutorial/path-params-numeric-validations.md",
+    "section": "Path Parameters and Numeric Validations > Declare metadata",
+    "text": "You can declare all the same parameters as for `Query`.\n\nFor example, to declare a `title` metadata value for the path parameter `item_id` you can type:\n\nA path parameter is always required as it has to be part of the path. Even if you declared it with `None` or set a default value, it would not affect anything, it would still be always required."
+   },
+   {
+    "score": 0.8521769046783447,
+    "source": "tutorial/path-params.md",
+    "section": "Path Parameters > Path parameters with types",
+    "text": "You can declare the type of a path parameter in the function, using standard Python type annotations:\n\nIn this case, `item_id` is declared to be an `int`.\n\nThis will give you editor support inside of your function, with error checks, completion, etc."
+   }
+  ],
+  "retrieval_s": 0.012274800001250696,
+  "generation_s": 3.440399899998738,
+  "total_s": 3.4526746999999887,
+  "id": "q04",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/path-params.md"
+  ]
+ },
+ {
+  "question": "Comment recevoir un corps de requête JSON avec un modèle Pydantic ?",
+  "answer": "Pour recevoir un corps de requête JSON avec un modèle Pydantic, vous pouvez utiliser la fonction `jsonable_encoder` décrite dans l'extrait [1]. Cette fonction permet de convertir un modèle Pydantic en données JSON compatibles, ce qui peut ensuite être utilisé avec `TestClient` pour envoyer des données au cours des tests.\n\nPar exemple, si vous avez un modèle Pydantic dans vos tests et que vous souhaitez envoyer ses données à l'application pendant les tests, vous pouvez utiliser `jsonable_encoder` pour convertir le modèle en données JSON avant de l'utiliser avec `TestClient`.",
+  "refused": false,
+  "sources": [
+   {
+    "score": 0.8622965812683105,
+    "source": "tutorial/testing.md",
+    "section": "Testing > Testing: extended example > Extended testing file",
+    "text": "Note that the `TestClient` receives data that can be converted to JSON, not Pydantic models.\n\nIf you have a Pydantic model in your test and you want to send its data to the application during testing, you can use the `jsonable_encoder` described in [JSON Compatible Encoder](encoder.md)."
+   },
+   {
+    "score": 0.8592976331710815,
+    "source": "tutorial/first-steps.md",
+    "section": "First Steps > Recap, step by step > Step 5: return the content",
+    "text": "You can return a `dict`, `list`, singular values as `str`, `int`, etc.\n\nYou can also return Pydantic models (you'll see more about that later).\n\nThere are many other objects and models that will be automatically converted to JSON (including ORMs, etc). Try using your favorite ones, it's highly probable that they are already supported."
+   },
+   {
+    "score": 0.8587722182273865,
+    "source": "tutorial/body-nested-models.md",
+    "section": "Body - Nested Models > Bodies of arbitrary `dict`s",
+    "text": "You can also declare a body as a `dict` with keys of some type and values of some other type.\n\nThis way, you don't have to know beforehand what the valid field/attribute names are (as would be the case with Pydantic models).\n\nThis would be useful if you want to receive keys that you don't already know.\n\n---\n\nAnother useful case is when you want to have keys of another type (e.g., `int`).\n\nThat's what we are going to see here.\n\nIn this case, you would accept any `dict` as long as it has `int` keys with `float` values:\n\nKeep in mind that JSON only supports `str` as keys.\n\nBut Pydantic has automatic data conversion.\n\nThis means that, even though your API clients can only send strings as keys, as long as those strings contain pure integers, Pydantic will convert them and validate them.\n\nAnd the `dict` you receive as `weights` will actually have `int` keys and `float` values."
+   },
+   {
+    "score": 0.8570462465286255,
+    "source": "tutorial/body-fields.md",
+    "section": "Body - Fields > Recap",
+    "text": "You can use Pydantic's `Field` to declare extra validations and metadata for model attributes.\n\nYou can also use the extra keyword arguments to pass additional JSON Schema metadata."
+   }
+  ],
+  "retrieval_s": 0.012839600000006612,
+  "generation_s": 3.7122482000013406,
+  "total_s": 3.725087800001347,
+  "id": "q05",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/body.md"
+  ]
+ },
+ {
+  "question": "Comment mettre à jour partiellement une ressource avec PATCH ?",
+  "answer": "Pour mettre à jour partiellement une ressource avec PATCH, vous pouvez suivre ces étapes [3] :\n\n1. Utilisez `PATCH` au lieu de `PUT` si nécessaire.\n2. Récupérez les données stockées.\n3. Placez ces données dans un modèle Pydantic.\n4. Créez un `dict` sans valeurs par défaut à partir du modèle d'entrée (en utilisant `exclude_unset`).\n5. Créez une copie du modèle stocké, mettez à jour ses attributs avec les mises à jour reçues (en utilisant le paramètre `update`).\n6. Convertissez le modèle copié en quelque chose qui peut être stocké dans votre base de données (par exemple, en utilisant `jsonable_encoder`).\n7. Enregistrez les données dans votre base de données.\n8. Retournez le modèle mis à jour.",
+  "refused": false,
+  "sources": [
+   {
+    "score": 0.8566626310348511,
+    "source": "tutorial/body-updates.md",
+    "section": "Body - Updates > Partial updates with `PATCH`",
+    "text": "You can also use the [HTTP `PATCH`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/PATCH) operation to *partially* update data.\n\nThis means that you can send only the data that you want to update, leaving the rest intact.\n\n`PATCH` is less commonly used and known than `PUT`.\n\nAnd many teams use only `PUT`, even for partial updates.\n\nYou are **free** to use them however you want, **FastAPI** doesn't impose any restrictions.\n\nBut this guide shows you, more or less, how they are intended to be used."
+   },
+   {
+    "score": 0.8495469093322754,
+    "source": "tutorial/body-updates.md",
+    "section": "Body - Updates > Partial updates with `PATCH` > Partial updates recap",
+    "text": "You can actually use this same technique with an HTTP `PUT` operation.\n\nBut the example here uses `PATCH` because it was created for these use cases.\n\nNotice that the input model is still validated.\n\nSo, if you want to receive partial updates that can omit all the attributes, you need to have a model with all the attributes marked as optional (with default values or `None`).\n\nTo distinguish from the models with all optional values for **updates** and models with required values for **creation**, you can use the ideas described in [Extra Models](extra-models.md)."
+   },
+   {
+    "score": 0.8409715294837952,
+    "source": "tutorial/body-updates.md",
+    "section": "Body - Updates > Partial updates with `PATCH` > Partial updates recap",
+    "text": "In summary, to apply partial updates you would:\n\n* (Optionally) use `PATCH` instead of `PUT`.\n* Retrieve the stored data.\n* Put that data in a Pydantic model.\n* Generate a `dict` without default values from the input model (using `exclude_unset`).\n    * This way you can update only the values actually set by the user, instead of overriding values already stored with default values in your model.\n* Create a copy of the stored model, updating its attributes with the received partial updates (using the `update` parameter).\n* Convert the copied model to something that can be stored in your DB (for example, using the `jsonable_encoder`).\n    * This is comparable to using the model's `.model_dump()` method again, but it makes sure (and converts) the values to data types that can be converted to JSON, for example, `datetime` to `str`.\n* Save the data to your DB.\n* Return the updated model.\n\nYou can actually use this same technique with an HTTP `PUT` operation."
+   },
+   {
+    "score": 0.834176242351532,
+    "source": "tutorial/body-updates.md",
+    "section": "Body - Updates > Partial updates with `PATCH` > Using Pydantic's `update` parameter",
+    "text": "Now, you can create a copy of the existing model using `.model_copy()`, and pass the `update` parameter with a `dict` containing the data to update.\n\nLike `stored_item_model.model_copy(update=update_data)`:"
+   }
+  ],
+  "retrieval_s": 0.01333150000027672,
+  "generation_s": 4.540429199998471,
+  "total_s": 4.553760699998747,
+  "id": "q06",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/body-updates.md"
+  ]
+ },
+ {
+  "question": "Comment imbriquer des modèles Pydantic dans un corps de requête ?",
+  "answer": "Je ne trouve pas la réponse dans la documentation fournie.",
+  "refused": true,
+  "sources": [
+   {
+    "score": 0.857748806476593,
+    "source": "tutorial/body.md",
+    "section": "Request Body > Import Pydantic's `BaseModel`",
+    "text": "First, you need to import `BaseModel` from `pydantic`:"
+   },
+   {
+    "score": 0.8501582741737366,
+    "source": "tutorial/query-param-models.md",
+    "section": "Query Parameter Models > Query Parameters with a Pydantic Model",
+    "text": "Declare the **query parameters** that you need in a **Pydantic model**, and then declare the parameter as `Query`:\n\n**FastAPI** will **extract** the data for **each field** from the **query parameters** in the request and give you the Pydantic model you defined."
+   },
+   {
+    "score": 0.8499393463134766,
+    "source": "tutorial/request-form-models.md",
+    "section": "Form Models > Pydantic Models for Forms",
+    "text": "You just need to declare a **Pydantic model** with the fields you want to receive as **form fields**, and then declare the parameter as `Form`:\n\n**FastAPI** will **extract** the data for **each field** from the **form data** in the request and give you the Pydantic model you defined."
+   },
+   {
+    "score": 0.8498965501785278,
+    "source": "tutorial/body-fields.md",
+    "section": "Body - Fields > Recap",
+    "text": "You can use Pydantic's `Field` to declare extra validations and metadata for model attributes.\n\nYou can also use the extra keyword arguments to pass additional JSON Schema metadata."
+   }
+  ],
+  "retrieval_s": 0.01198110000041197,
+  "generation_s": 2.4410752999992837,
+  "total_s": 2.4530563999996957,
+  "id": "q07",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/body-nested-models.md"
+  ]
+ },
+ {
+  "question": "Comment lire un cookie envoyé par le client ?",
+  "answer": "Pour lire un cookie envoyé par le client, vous devez déclarer les paramètres de cookie dans un modèle Pydantic et utiliser le type `Cookie` pour chaque paramètre de cookie. FastAPI extrait ensuite les données de chaque champ à partir des cookies reçus dans la requête et vous donne le modèle Pydantic que vous avez défini [3].\n\nPar exemple :\n\n```python\nfrom fastapi import FastAPI, Cookie\n\napp = FastAPI()\n\n@app.get(\"/items/\")\nasync def read_items(ads_id: str = Cookie(None)):\n    return {\"ads_id\": ads_id}\n```\n\nIci, `ads_id` est un cookie que vous pouvez lire dans votre route.",
+  "refused": false,
+  "sources": [
+   {
+    "score": 0.8243539929389954,
+    "source": "tutorial/cookie-param-models.md",
+    "section": "Cookie Parameter Models > Forbid Extra Cookies",
+    "text": "For example, if the client tries to send a `santa_tracker` cookie with a value of `good-list-please`, the client will receive an **error** response telling them that the `santa_tracker` <dfn title=\"Santa disapproves the lack of cookies. 🎅 Okay, no more cookie jokes.\">cookie is not allowed</dfn>:\n\n```json\n{\n    \"detail\": [\n        {\n            \"type\": \"extra_forbidden\",\n            \"loc\": [\"cookie\", \"santa_tracker\"],\n            \"msg\": \"Extra inputs are not permitted\",\n            \"input\": \"good-list-please\",\n        }\n    ]\n}\n```"
+   },
+   {
+    "score": 0.8219324946403503,
+    "source": "tutorial/cookie-param-models.md",
+    "section": "Cookie Parameter Models > Forbid Extra Cookies",
+    "text": "In some special use cases (probably not very common), you might want to **restrict** the cookies that you want to receive.\n\nYour API now has the power to control its own <dfn title=\"This is a joke, just in case. It has nothing to do with cookie consents, but it's funny that even the API can now reject the poor cookies. Have a cookie. 🍪\">cookie consent</dfn>. 🤪🍪\n\nYou can use Pydantic's model configuration to `forbid` any `extra` fields:\n\nIf a client tries to send some **extra cookies**, they will receive an **error** response.\n\nPoor cookie banners with all their effort to get your consent for the <dfn title=\"This is another joke. Don't pay attention to me. Have some coffee for your cookie. ☕\">API to reject it</dfn>. 🍪"
+   },
+   {
+    "score": 0.8216605186462402,
+    "source": "tutorial/cookie-param-models.md",
+    "section": "Cookie Parameter Models > Cookies with a Pydantic Model",
+    "text": "Declare the **cookie** parameters that you need in a **Pydantic model**, and then declare the parameter as `Cookie`:\n\n**FastAPI** will **extract** the data for **each field** from the **cookies** received in the request and give you the Pydantic model you defined."
+   },
+   {
+    "score": 0.8198399543762207,
+    "source": "tutorial/cookie-param-models.md",
+    "section": "Cookie Parameter Models > Check the Docs",
+    "text": "You can see the defined cookies in the docs UI at `/docs`:\n\n<div class=\"screenshot\">\n<img src=\"/img/tutorial/cookie-param-models/image01.png\">\n</div>\n\nHave in mind that, as **browsers handle cookies** in special ways and behind the scenes, they **don't** easily allow **JavaScript** to touch them.\n\nIf you go to the **API docs UI** at `/docs` you will be able to see the **documentation** for cookies for your *path operations*.\n\nBut even if you **fill the data** and click \"Execute\", because the docs UI works with **JavaScript**, the cookies won't be sent, and you will see an **error** message as if you didn't write any values."
+   }
+  ],
+  "retrieval_s": 0.011525600000823033,
+  "generation_s": 3.953715599998759,
+  "total_s": 3.965241199999582,
+  "id": "q08",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/cookie-params.md"
+  ]
+ },
+ {
+  "question": "Comment lire un en-tête HTTP de la requête ?",
+  "answer": "Je ne trouve pas la réponse dans la documentation fournie.",
+  "refused": true,
+  "sources": [
+   {
+    "score": 0.8440208435058594,
+    "source": "tutorial/sql-databases.md",
+    "section": "SQL (Relational) Databases > Create the App with a Single Model > Read Heroes",
+    "text": "We can **read** `Hero`s from the database using a `select()`. We can include a `limit` and `offset` to paginate the results."
+   },
+   {
+    "score": 0.832119882106781,
+    "source": "tutorial/sql-databases.md",
+    "section": "SQL (Relational) Databases > Update the App with Multiple Models > Read Heroes with `HeroPublic`",
+    "text": "We can do the same as before to **read** `Hero`s, again, we use `response_model=list[HeroPublic]` to ensure that the data is validated and serialized correctly."
+   },
+   {
+    "score": 0.8287659287452698,
+    "source": "tutorial/path-operation-configuration.md",
+    "section": "Path Operation Configuration > Response Status Code",
+    "text": "You can define the (HTTP) `status_code` to be used in the response of your *path operation*.\n\nYou can pass directly the `int` code, like `404`.\n\nBut if you don't remember what each number code is for, you can use the shortcut constants in `status`:\n\nThat status code will be used in the response and will be added to the OpenAPI schema.\n\nYou could also use `from starlette import status`.\n\n**FastAPI** provides the same `starlette.status` as `fastapi.status` just as a convenience for you, the developer. But it comes directly from Starlette."
+   },
+   {
+    "score": 0.8278153538703918,
+    "source": "tutorial/handling-errors.md",
+    "section": "Handling Errors > Override the default exception handlers > Override the `HTTPException` error handler",
+    "text": "The same way, you can override the `HTTPException` handler.\n\nFor example, you could want to return a plain text response instead of JSON for these errors:\n\nYou could also use `from starlette.responses import PlainTextResponse`.\n\n**FastAPI** provides the same `starlette.responses` as `fastapi.responses` just as a convenience for you, the developer. But most of the available responses come directly from Starlette.\n\nHave in mind that the `RequestValidationError` contains the information of the file name and line where the validation error happens so that you can show it in your logs with the relevant information if you want to.\n\nBut that means that if you just convert it to a string and return that information directly, you could be leaking a bit of information about your system, that's why here the code extracts and shows each error independently."
+   }
+  ],
+  "retrieval_s": 0.01218210000115505,
+  "generation_s": 2.4763536999998905,
+  "total_s": 2.4885358000010456,
+  "id": "q09",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/header-params.md"
+  ]
+ },
+ {
+  "question": "Comment regrouper plusieurs paramètres de requête dans un modèle Pydantic ?",
+  "answer": "Pour regrouper plusieurs paramètres de requête dans un modèle Pydantic, vous pouvez déclarer ces paramètres dans un modèle Pydantic et les utiliser avec le décorateur `Query`. FastAPI extraira les données pour chaque champ de ce modèle à partir des paramètres de requête dans la requête et vous fournira le modèle Pydantic que vous avez défini.\n\nVoici un exemple basé sur l'extrait [1] :\n\n```python\nfrom fastapi import FastAPI, Query\nfrom pydantic import BaseModel\n\nclass ItemQuery(BaseModel):\n    name: str\n    price: float\n\napp = FastAPI()\n\n@app.get(\"/items/\")\nasync def read_items(query: ItemQuery = Query(...)):\n    return {\"query\": query}\n```\n\nDans cet exemple, `ItemQuery` est un modèle Pydantic qui contient les champs `name` et `price`. Ces champs sont utilisés comme paramètres de requête dans l'API.",
+  "refused": false,
+  "sources": [
+   {
+    "score": 0.8739866614341736,
+    "source": "tutorial/query-param-models.md",
+    "section": "Query Parameter Models > Query Parameters with a Pydantic Model",
+    "text": "Declare the **query parameters** that you need in a **Pydantic model**, and then declare the parameter as `Query`:\n\n**FastAPI** will **extract** the data for **each field** from the **query parameters** in the request and give you the Pydantic model you defined."
+   },
+   {
+    "score": 0.8617409467697144,
+    "source": "tutorial/header-param-models.md",
+    "section": "Header Parameter Models > Header Parameters with a Pydantic Model",
+    "text": "Declare the **header parameters** that you need in a **Pydantic model**, and then declare the parameter as `Header`:\n\n**FastAPI** will **extract** the data for **each field** from the **headers** in the request and give you the Pydantic model you defined."
+   },
+   {
+    "score": 0.8587121367454529,
+    "source": "tutorial/request-form-models.md",
+    "section": "Form Models > Pydantic Models for Forms",
+    "text": "You just need to declare a **Pydantic model** with the fields you want to receive as **form fields**, and then declare the parameter as `Form`:\n\n**FastAPI** will **extract** the data for **each field** from the **form data** in the request and give you the Pydantic model you defined."
+   },
+   {
+    "score": 0.8553762435913086,
+    "source": "tutorial/query-param-models.md",
+    "section": "Query Parameter Models > Summary",
+    "text": "You can use **Pydantic models** to declare **query parameters** in **FastAPI**. 😎\n\nSpoiler alert: you can also use Pydantic models to declare cookies and headers, but you will read about that later in the tutorial. 🤫"
+   }
+  ],
+  "retrieval_s": 0.011692899999616202,
+  "generation_s": 4.456082900000183,
+  "total_s": 4.467775799999799,
+  "id": "q10",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/query-param-models.md"
+  ]
+ },
+ {
+  "question": "Comment téléverser un fichier ?",
+  "answer": "Pour téléverser un fichier, vous devez utiliser la fonction `File` fournie par FastAPI. Voici un exemple d'utilisation :\n\n```python\nfrom fastapi import FastAPI, File, UploadFile\nfrom fastapi.responses import HTMLResponse\n\napp = FastAPI()\n\n@app.post(\"/uploadfile/\")\nasync def create_upload_file(file: UploadFile = File(...)):\n    return {\"filename\": file.filename}\n```\n\nCette fonction permet de recevoir un fichier uploadé par le client. Assurez-vous également d'avoir installé `python-multipart` pour gérer les fichiers envoyés en tant que \"form data\". [3]",
+  "refused": false,
+  "sources": [
+   {
+    "score": 0.8091974258422852,
+    "source": "tutorial/request-files.md",
+    "section": "Request Files > Import `File`",
+    "text": "Import `File` and `UploadFile` from `fastapi`:"
+   },
+   {
+    "score": 0.8038222193717957,
+    "source": "tutorial/request-files.md",
+    "section": "Request Files > Multiple File Uploads",
+    "text": "It's possible to upload several files at the same time.\n\nThey would be associated to the same \"form field\" sent using \"form data\".\n\nTo use that, declare a list of `bytes` or `UploadFile`:\n\nYou will receive, as declared, a `list` of `bytes` or `UploadFile`s.\n\nYou could also use `from starlette.responses import HTMLResponse`.\n\n**FastAPI** provides the same `starlette.responses` as `fastapi.responses` just as a convenience for you, the developer. But most of the available responses come directly from Starlette."
+   },
+   {
+    "score": 0.8023466467857361,
+    "source": "tutorial/request-files.md",
+    "section": "Request Files",
+    "text": "You can define files to be uploaded by the client using `File`.\n\nTo receive uploaded files, first install [`python-multipart`](https://github.com/Kludex/python-multipart).\n\nAdd it to your project:\n\n```console\n$ uv add python-multipart\n```\n\nThis is because uploaded files are sent as \"form data\"."
+   },
+   {
+    "score": 0.7992950081825256,
+    "source": "tutorial/request-forms-and-files.md",
+    "section": "Request Forms and Files",
+    "text": "You can define files and form fields at the same time using `File` and `Form`.\n\nTo receive uploaded files and/or form data, first install [`python-multipart`](https://github.com/Kludex/python-multipart).\n\nAdd it to your project:\n\n```console\n$ uv add python-multipart\n```"
+   }
+  ],
+  "retrieval_s": 0.012768099999448168,
+  "generation_s": 3.7864778000002843,
+  "total_s": 3.7992458999997325,
+  "id": "q11",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/request-files.md"
+  ]
+ },
+ {
+  "question": "Comment recevoir des données de formulaire ?",
+  "answer": "Pour recevoir des données de formulaire, vous pouvez utiliser la directive `Form` dans FastAPI. Voici comment procéder :\n\n1. Installez `python-multipart` :\n   ```console\n   $ uv add python-multipart\n   ```\n\n2. Utilisez `Form` pour déclarer les paramètres de votre formulaire. Par exemple, pour une authentification par mot de passe (flow OAuth2), vous pouvez déclarer les paramètres `username` et `password` comme ceci :\n\n   ```python\n   from fastapi import FastAPI, Form\n\n   app = FastAPI()\n\n   @app.post(\"/login\")\n   async def login(username: str = Form(...), password: str = Form(...)):\n       # Votre logique ici\n   ```\n\nNotez que `Form(...)` est utilisé pour indiquer que ces paramètres doivent être traités comme des données de formulaire, pas comme des paramètres de corps JSON ou de requête.\n\nJe ne trouve pas la réponse dans la documentation fournie. [1] [2] [3] [4]",
+  "refused": true,
+  "sources": [
+   {
+    "score": 0.8490616679191589,
+    "source": "tutorial/request-forms-and-files.md",
+    "section": "Request Forms and Files",
+    "text": "You can define files and form fields at the same time using `File` and `Form`.\n\nTo receive uploaded files and/or form data, first install [`python-multipart`](https://github.com/Kludex/python-multipart).\n\nAdd it to your project:\n\n```console\n$ uv add python-multipart\n```"
+   },
+   {
+    "score": 0.8443042635917664,
+    "source": "tutorial/request-forms.md",
+    "section": "Form Data",
+    "text": "When you need to receive form fields instead of JSON, you can use `Form`.\n\nTo use forms, first install [`python-multipart`](https://github.com/Kludex/python-multipart).\n\nAdd it to your project:\n\n```console\n$ uv add python-multipart\n```"
+   },
+   {
+    "score": 0.8401130437850952,
+    "source": "tutorial/request-forms.md",
+    "section": "Form Data > Recap",
+    "text": "Use `Form` to declare form data input parameters."
+   },
+   {
+    "score": 0.8372472524642944,
+    "source": "tutorial/request-forms.md",
+    "section": "Form Data > Define `Form` parameters",
+    "text": "Create form parameters the same way you would for `Body` or `Query`:\n\nFor example, in one of the ways the OAuth2 specification can be used (called \"password flow\") it is required to send a `username` and `password` as form fields.\n\nThe <dfn title=\"specification\">spec</dfn> requires the fields to be exactly named `username` and `password`, and to be sent as form fields, not JSON.\n\nWith `Form` you can declare the same configurations as with `Body` (and `Query`, `Path`, `Cookie`), including validation, examples, an alias (e.g. `user-name` instead of `username`), etc.\n\n`Form` is a class that inherits directly from `Body`.\n\nTo declare form bodies, you need to use `Form` explicitly, because without it the parameters would be interpreted as query parameters or body (JSON) parameters."
+   }
+  ],
+  "retrieval_s": 0.011053299998820876,
+  "generation_s": 4.843300599999566,
+  "total_s": 4.854353899998387,
+  "id": "q12",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/request-forms.md"
+  ]
+ },
+ {
+  "question": "Comment recevoir à la fois un fichier et des champs de formulaire ?",
+  "answer": "Pour recevoir à la fois un fichier et des champs de formulaire, vous pouvez utiliser les annotations `File` et `Form` ensemble dans une même requête. Voici comment procéder :\n\n1. Installez `python-multipart` : \n```console\n$ uv add python-multipart\n```\n\n2. Déclarez vos paramètres en utilisant `File` et `Form` :\n```python\nfrom fastapi import File, Form\n\nasync def create_file_and_form_data(file: bytes = File(...), field1: str = Form(...), field2: int = Form(...)):\n    # Votre logique ici\n```\n\n3. Vous pouvez également utiliser `UploadFile` pour les fichiers plus complexes :\n```python\nfrom fastapi import File, Form\nfrom fastapi.responses import HTMLResponse\n\nasync def create_file_and_form_data(file: UploadFile = File(...), field1: str = Form(...)):\n    # Votre logique ici\n```\n\nCes paramètres seront envoyés sous forme de données de formulaire et vous recevrez les fichiers et les champs de formulaire comme indiqué. [3]",
+  "refused": false,
+  "sources": [
+   {
+    "score": 0.874311089515686,
+    "source": "tutorial/request-forms-and-files.md",
+    "section": "Request Forms and Files",
+    "text": "You can define files and form fields at the same time using `File` and `Form`.\n\nTo receive uploaded files and/or form data, first install [`python-multipart`](https://github.com/Kludex/python-multipart).\n\nAdd it to your project:\n\n```console\n$ uv add python-multipart\n```"
+   },
+   {
+    "score": 0.8635005354881287,
+    "source": "tutorial/request-forms-and-files.md",
+    "section": "Request Forms and Files > Recap",
+    "text": "Use `File` and `Form` together when you need to receive data and files in the same request."
+   },
+   {
+    "score": 0.8489810228347778,
+    "source": "tutorial/request-forms-and-files.md",
+    "section": "Request Forms and Files > Define `File` and `Form` parameters",
+    "text": "Create file and form parameters the same way you would for `Body` or `Query`:\n\nThe files and form fields will be uploaded as form data and you will receive the files and form fields.\n\nAnd you can declare some of the files as `bytes` and some as `UploadFile`.\n\nYou can declare multiple `File` and `Form` parameters in a *path operation*, but you can't also declare `Body` fields that you expect to receive as JSON, as the request will have the body encoded using `multipart/form-data` instead of `application/json`.\n\nThis is not a limitation of **FastAPI**, it's part of the HTTP protocol."
+   },
+   {
+    "score": 0.8460022211074829,
+    "source": "tutorial/request-files.md",
+    "section": "Request Files > Multiple File Uploads",
+    "text": "It's possible to upload several files at the same time.\n\nThey would be associated to the same \"form field\" sent using \"form data\".\n\nTo use that, declare a list of `bytes` or `UploadFile`:\n\nYou will receive, as declared, a `list` of `bytes` or `UploadFile`s.\n\nYou could also use `from starlette.responses import HTMLResponse`.\n\n**FastAPI** provides the same `starlette.responses` as `fastapi.responses` just as a convenience for you, the developer. But most of the available responses come directly from Starlette."
+   }
+  ],
+  "retrieval_s": 0.015529100001003826,
+  "generation_s": 4.913699999999153,
+  "total_s": 4.929229100000157,
+  "id": "q13",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/request-forms-and-files.md"
+  ]
+ },
+ {
+  "question": "Comment filtrer les données renvoyées par une route avec response_model ?",
+  "answer": "Pour filtrer les données renvoyées par une route avec `response_model`, vous pouvez utiliser l'argument `response_model_exclude_unset`. Cela permet de retourner uniquement les valeurs explicitement définies, en filtrant celles qui ne sont pas explicitement définies [1].",
+  "refused": false,
+  "sources": [
+   {
+    "score": 0.8530451059341431,
+    "source": "tutorial/response-model.md",
+    "section": "Response Model - Return Type > Recap",
+    "text": "Use the *path operation decorator's* parameter `response_model` to define response models and especially to ensure private data is filtered out.\n\nUse `response_model_exclude_unset` to return only the values explicitly set."
+   },
+   {
+    "score": 0.84581458568573,
+    "source": "tutorial/response-model.md",
+    "section": "Response Model - Return Type > Return Type and Data Filtering",
+    "text": "Let's continue from the previous example. We wanted to **annotate the function with one type**, but we wanted to be able to return from the function something that actually includes **more data**.\n\nWe want FastAPI to keep **filtering** the data using the response model. So that even though the function returns more data, the response will only include the fields declared in the response model.\n\nIn the previous example, because the classes were different, we had to use the `response_model` parameter. But that also means that we don't get the support from the editor and tools checking the function return type.\n\nBut in most of the cases where we need to do something like this, we want the model just to **filter/remove** some of the data as in this example.\n\nAnd in those cases, we can use classes and inheritance to take advantage of function **type annotations** to get better support in the editor and tools, and still get the FastAPI **data filtering**."
+   },
+   {
+    "score": 0.840461790561676,
+    "source": "tutorial/response-model.md",
+    "section": "Response Model - Return Type > `response_model` Parameter",
+    "text": "You can use the `response_model` parameter in any of the *path operations*:\n\n* `@app.get()`\n* `@app.post()`\n* `@app.put()`\n* `@app.delete()`\n* etc.\n\nNotice that `response_model` is a parameter of the \"decorator\" method (`get`, `post`, etc). Not of your *path operation function*, like all the parameters and body.\n\n`response_model` receives the same type you would declare for a Pydantic model field, so, it can be a Pydantic model, but it can also be, e.g. a `list` of Pydantic models, like `List[Item]`.\n\nFastAPI will use this `response_model` to do all the data documentation, validation, etc. and also to **convert and filter the output data** to its type declaration.\n\nIf you have strict type checks in your editor, mypy, etc, you can declare the function return type as `Any`.\n\nThat way you tell the editor that you are intentionally returning anything. But FastAPI will still do the data documentation, validation, filtering, etc. with the `response_model`."
+   },
+   {
+    "score": 0.8361202478408813,
+    "source": "tutorial/response-model.md",
+    "section": "Response Model - Return Type > Other Return Type Annotations > Disable Response Model",
+    "text": "Continuing from the example above, you might not want to have the default data validation, documentation, filtering, etc. that is performed by FastAPI.\n\nBut you might want to still keep the return type annotation in the function to get the support from tools like editors and type checkers (e.g. mypy).\n\nIn this case, you can disable the response model generation by setting `response_model=None`:\n\nThis will make FastAPI skip the response model generation and that way you can have any return type annotations you need without it affecting your FastAPI application. 🤓"
+   }
+  ],
+  "retrieval_s": 0.013162999999622116,
+  "generation_s": 3.088264899999558,
+  "total_s": 3.1014278999991802,
+  "id": "q14",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/response-model.md"
+  ]
+ },
+ {
+  "question": "Comment changer le code HTTP de la réponse ?",
+  "answer": "Vous pouvez définir le code HTTP de la réponse en utilisant la clé `status_code` dans la configuration de votre opération de chemin. Vous pouvez passer directement le code `int`, comme `404`, ou utiliser les constantes de raccourci dans `status` :\n\n```python\nfrom fastapi import status\n\n# Exemple\n@app.get(\"/example\", status_code=status.HTTP_404_NOT_FOUND)\nasync def example():\n    return {\"message\": \"Not found\"}\n```\n\nCela utilisera le code de statut HTTP `404` dans la réponse et sera ajouté au schéma OpenAPI [1][4].",
+  "refused": false,
+  "sources": [
+   {
+    "score": 0.8564924001693726,
+    "source": "tutorial/response-status-code.md",
+    "section": "Response Status Code > About HTTP status codes",
+    "text": "If you already know what HTTP status codes are, skip to the next section.\n\nIn HTTP, you send a numeric status code of 3 digits as part of the response.\n\nThese status codes have an associated name to help recognize them, but the important part is the number.\n\nIn short:"
+   },
+   {
+    "score": 0.8515770435333252,
+    "source": "tutorial/handling-errors.md",
+    "section": "Handling Errors > Use `HTTPException`",
+    "text": "To return HTTP responses with errors to the client you use `HTTPException`."
+   },
+   {
+    "score": 0.8501856327056885,
+    "source": "tutorial/response-status-code.md",
+    "section": "Response Status Code > About HTTP status codes",
+    "text": "* `500 - 599` are for server errors. You almost never use them directly. When something goes wrong at some part in your application code, or server, it will automatically return one of these status codes.\n\nTo know more about each status code and which code is for what, check the [<abbr title=\"Mozilla Developer Network\">MDN</abbr> documentation about HTTP status codes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status)."
+   },
+   {
+    "score": 0.8500961065292358,
+    "source": "tutorial/path-operation-configuration.md",
+    "section": "Path Operation Configuration > Response Status Code",
+    "text": "You can define the (HTTP) `status_code` to be used in the response of your *path operation*.\n\nYou can pass directly the `int` code, like `404`.\n\nBut if you don't remember what each number code is for, you can use the shortcut constants in `status`:\n\nThat status code will be used in the response and will be added to the OpenAPI schema.\n\nYou could also use `from starlette import status`.\n\n**FastAPI** provides the same `starlette.status` as `fastapi.status` just as a convenience for you, the developer. But it comes directly from Starlette."
+   }
+  ],
+  "retrieval_s": 0.012829600000259234,
+  "generation_s": 3.836944599999697,
+  "total_s": 3.849774199999956,
+  "id": "q15",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/response-status-code.md"
+  ]
+ },
+ {
+  "question": "Comment renvoyer une erreur HTTP 404 depuis une route ?",
+  "answer": "Pour renvoyer une erreur HTTP 404 depuis une route, vous pouvez utiliser la fonction `HTTPException` comme indiqué dans l'extrait [2] :\n\n```python\nfrom fastapi import HTTPException\n\ndef some_route():\n    raise HTTPException(status_code=404, detail=\"Item not found\")\n```\n\nCela fera en sorte que le client reçoive une réponse avec un code d'état HTTP 404 et un détail en JSON comme montré dans l'extrait [4] :\n\n```JSON\n{\n  \"detail\": \"Item not found\"\n}\n```",
+  "refused": false,
+  "sources": [
+   {
+    "score": 0.8345199227333069,
+    "source": "tutorial/frontend.md",
+    "section": "Frontend > Custom 404 Page",
+    "text": "You can also serve a static `404.html` page for missing frontend paths:\n\nThat response keeps a status code of `404`.\n\nIn this case, **FastAPI** won't serve `index.html` for missing frontend paths. It will return the `404.html` file instead.\n\nBy default, `fallback` has a value of `fallback=\"auto\"`. With this, if a `404.html` file is found, it will be used as the fallback automatically.\n\nSo, you can normally omit the `fallback` argument.\n\nThis is useful with frontend tools that generate static HTML files for each page, like Astro."
+   },
+   {
+    "score": 0.8337000012397766,
+    "source": "tutorial/handling-errors.md",
+    "section": "Handling Errors > Use `HTTPException`",
+    "text": "To return HTTP responses with errors to the client you use `HTTPException`."
+   },
+   {
+    "score": 0.8290062546730042,
+    "source": "tutorial/frontend.md",
+    "section": "Frontend > Client-Side Routing",
+    "text": "Many frontend apps, including **single-page apps** (SPAs), use client-side routing. A path like `/dashboard/settings` might not be a real file but the framework would take care of handling it.\n\nSo, if accessing that URL directly (instead of navigating through the app), the backend should serve the frontend app from `index.html`, so that the frontend framework can then handle the client-side routing.\n\nFor that, use `fallback=\"index.html\"`:\n\n**FastAPI** uses this fallback only for `GET` and `HEAD` requests that explicitly accept HTML with `Accept: text/html` or `Accept: application/xhtml+xml`, as browser navigation requests normally do. Missing files like JavaScript, CSS, and images still return `404`.\n\nRequests with other methods, like `POST` or `PUT`, to paths that only match the frontend fallback also return `404`. Regular **FastAPI** *path operations* still have higher priority than frontend routes."
+   },
+   {
+    "score": 0.828681230545044,
+    "source": "tutorial/handling-errors.md",
+    "section": "Handling Errors > Use `HTTPException` > The resulting response",
+    "text": "If the client requests `http://example.com/items/foo` (an `item_id` `\"foo\"`), that client will receive an HTTP status code of 200, and a JSON response of:\n\n```JSON\n{\n  \"item\": \"The Foo Wrestlers\"\n}\n```\n\nBut if the client requests `http://example.com/items/bar` (a non-existent `item_id` `\"bar\"`), that client will receive an HTTP status code of 404 (the \"not found\" error), and a JSON response of:\n\n```JSON\n{\n  \"detail\": \"Item not found\"\n}\n```\n\nWhen raising an `HTTPException`, you can pass any value that can be converted to JSON as the parameter `detail`, not only `str`.\n\nYou could pass a `dict`, a `list`, etc.\n\nThey are handled automatically by **FastAPI** and converted to JSON."
+   }
+  ],
+  "retrieval_s": 0.011701899999025045,
+  "generation_s": 3.7862779000006412,
+  "total_s": 3.7979797999996663,
+  "id": "q16",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/handling-errors.md"
+  ]
+ },
+ {
+  "question": "Comment ajouter un exemple de données dans le schéma OpenAPI ?",
+  "answer": "Vous pouvez ajouter des exemples de données dans le schéma OpenAPI en utilisant la clé `examples` avec les décorateurs comme `Body()`, `Path()`, `Query()`, etc. Cela permet d'ajouter des informations supplémentaires qui apparaîtront dans l'interface utilisateur de la documentation [2] [3].",
+  "refused": false,
+  "sources": [
+   {
+    "score": 0.890999436378479,
+    "source": "tutorial/schema-extra-example.md",
+    "section": "Declare Request Example Data > `examples` in JSON Schema - OpenAPI",
+    "text": "When using any of:\n\n* `Path()`\n* `Query()`\n* `Header()`\n* `Cookie()`\n* `Body()`\n* `Form()`\n* `File()`\n\nyou can also declare a group of `examples` with additional information that will be added to their **JSON Schemas** inside of **OpenAPI**."
+   },
+   {
+    "score": 0.8849619030952454,
+    "source": "tutorial/schema-extra-example.md",
+    "section": "Declare Request Example Data > `examples` in JSON Schema - OpenAPI > OpenAPI Examples in the Docs UI",
+    "text": "With `openapi_examples` added to `Body()` the `/docs` would look like:\n\n<img src=\"/img/tutorial/body-fields/image02.png\">"
+   },
+   {
+    "score": 0.8821210861206055,
+    "source": "tutorial/schema-extra-example.md",
+    "section": "Declare Request Example Data > Extra JSON Schema data in Pydantic models",
+    "text": "OpenAPI 3.1.0 (used since FastAPI 0.99.0) added support for `examples`, which is part of the **JSON Schema** standard.\n\nBefore that, it only supported the keyword `example` with a single example. That is still supported by OpenAPI 3.1.0, but is deprecated and is not part of the JSON Schema standard. So you are encouraged to migrate `example` to `examples`. 🤓\n\nYou can read more at the end of this page."
+   },
+   {
+    "score": 0.8761749863624573,
+    "source": "tutorial/schema-extra-example.md",
+    "section": "Declare Request Example Data > `examples` in JSON Schema - OpenAPI > Example in the docs UI",
+    "text": "With any of the methods above it would look like this in the `/docs`:\n\n<img src=\"/img/tutorial/body-fields/image01.png\">"
+   }
+  ],
+  "retrieval_s": 0.011920400000235531,
+  "generation_s": 3.190299199999572,
+  "total_s": 3.2022195999998075,
+  "id": "q17",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/schema-extra-example.md"
+  ]
+ },
+ {
+  "question": "Comment exécuter une tâche en arrière-plan après l'envoi de la réponse ?",
+  "answer": "Pour exécuter une tâche en arrière-plan après l'envoi de la réponse, vous pouvez définir une fonction de tâche et l'utiliser avec `BackgroundTasks` dans une fonction de chemin d'opérations ou une dépendance [2]. Cette fonction de tâche peut être asynchrone ou synchrone, selon vos besoins [3]. Par exemple, vous pouvez envoyer un email en arrière-plan après avoir traité une action [1].",
+  "refused": false,
+  "sources": [
+   {
+    "score": 0.850731372833252,
+    "source": "tutorial/background-tasks.md",
+    "section": "Background Tasks",
+    "text": "You can define background tasks to be run *after* returning a response.\n\nThis is useful for operations that need to happen after a request, but that the client doesn't really have to be waiting for the operation to complete before receiving the response.\n\nThis includes, for example:\n\n* Email notifications sent after performing an action:\n    * As connecting to an email server and sending an email tends to be \"slow\" (several seconds), you can return the response right away and send the email notification in the background.\n* Processing data:\n    * For example, let's say you receive a file that must go through a slow process, you can return a response of \"Accepted\" (HTTP 202) and process the file in the background."
+   },
+   {
+    "score": 0.8416570425033569,
+    "source": "tutorial/background-tasks.md",
+    "section": "Background Tasks > Recap",
+    "text": "Import and use `BackgroundTasks` with parameters in *path operation functions* and dependencies to add background tasks."
+   },
+   {
+    "score": 0.8342731595039368,
+    "source": "tutorial/background-tasks.md",
+    "section": "Background Tasks > Create a task function",
+    "text": "Create a function to be run as the background task.\n\nIt is just a standard function that can receive parameters.\n\nIt can be an `async def` or normal `def` function, **FastAPI** will know how to handle it correctly.\n\nIn this case, the task function will write to a file (simulating sending an email).\n\nAnd as the write operation doesn't use `async` and `await`, we define the function with normal `def`:"
+   },
+   {
+    "score": 0.8317478895187378,
+    "source": "tutorial/middleware.md",
+    "section": "Middleware > Create a middleware > Before and after the `response`",
+    "text": "You can add code to be run with the `request`,  before any *path operation* receives it.\n\nAnd also after the `response` is generated, before returning it.\n\nFor example, you could add a custom header `X-Process-Time` containing the time in seconds that it took to process the request and generate a response:\n\nHere we use [`time.perf_counter()`](https://docs.python.org/3/library/time.html#time.perf_counter) instead of `time.time()` because it can be more precise for these use cases. 🤓"
+   }
+  ],
+  "retrieval_s": 0.013588699999672826,
+  "generation_s": 3.5201366000001144,
+  "total_s": 3.5337252999997872,
+  "id": "q18",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/background-tasks.md"
+  ]
+ },
+ {
+  "question": "Comment structurer une grosse application en plusieurs fichiers ?",
+  "answer": "Pour structurer une grande application FastAPI en plusieurs fichiers, vous pouvez utiliser un répertoire de package comme ceci :\n\n```\n.\n├── app\n│   ├── __init__.py\n│   ├── main.py\n│   ├── dependencies.py\n│   └── routers\n│   │   ├── __init__.py\n│   │   ├── items.py\n│   │   └── users.py\n│   └── internal\n│       ├── __init__.py\n│       └── admin.py\n```\n\nChaque `__init__.py` permet d'importer du code d'un fichier à l'autre. Par exemple, dans `app/main.py`, vous pouvez avoir une ligne d'importation comme ceci :\n\n```python\nfrom app.routers import items\n```\n\nCela vous permet de diviser votre application en modules et sous-modules, ce qui facilite sa gestion et sa maintenance.",
+  "refused": false,
+  "sources": [
+   {
+    "score": 0.8516981601715088,
+    "source": "tutorial/bigger-applications.md",
+    "section": "Bigger Applications - Multiple Files > An example file structure",
+    "text": "<img src=\"/img/tutorial/bigger-applications/package.drawio.svg\">\n\nThe same file structure with comments:\n\n```bash\n.\n├── app                  # \"app\" is a Python package\n│   ├── __init__.py      # this file makes \"app\" a \"Python package\"\n│   ├── main.py          # \"main\" module, e.g. import app.main\n│   ├── dependencies.py  # \"dependencies\" module, e.g. import app.dependencies\n│   └── routers          # \"routers\" is a \"Python subpackage\"\n│   │   ├── __init__.py  # makes \"routers\" a \"Python subpackage\"\n│   │   ├── items.py     # \"items\" submodule, e.g. import app.routers.items\n│   │   └── users.py     # \"users\" submodule, e.g. import app.routers.users\n│   └── internal         # \"internal\" is a \"Python subpackage\"\n│       ├── __init__.py  # makes \"internal\" a \"Python subpackage\"\n│       └── admin.py     # \"admin\" submodule, e.g. import app.internal.admin\n```"
+   },
+   {
+    "score": 0.8493229746818542,
+    "source": "tutorial/bigger-applications.md",
+    "section": "Bigger Applications - Multiple Files > An example file structure",
+    "text": "Let's say you have a file structure like this:\n\n```\n.\n├── app\n│   ├── __init__.py\n│   ├── main.py\n│   ├── dependencies.py\n│   └── routers\n│   │   ├── __init__.py\n│   │   ├── items.py\n│   │   └── users.py\n│   └── internal\n│       ├── __init__.py\n│       └── admin.py\n```\n\nThere are several `__init__.py` files: one in each directory or subdirectory.\n\nThis is what allows importing code from one file into another.\n\nFor example, in `app/main.py` you could have a line like:\n\n```\nfrom app.routers import items\n```"
+   },
+   {
+    "score": 0.8460164070129395,
+    "source": "tutorial/bigger-applications.md",
+    "section": "Bigger Applications - Multiple Files > `APIRouter` > Import `APIRouter`",
+    "text": "You import it and create an \"instance\" the same way you would with the class `FastAPI`:"
+   },
+   {
+    "score": 0.8434692025184631,
+    "source": "tutorial/bigger-applications.md",
+    "section": "Bigger Applications - Multiple Files",
+    "text": "If you are building an application or a web API, it's rarely the case that you can put everything in a single file.\n\n**FastAPI** provides a convenience tool to structure your application while keeping all the flexibility.\n\nIf you come from Flask, this would be the equivalent of Flask's Blueprints."
+   }
+  ],
+  "retrieval_s": 0.012289599999348866,
+  "generation_s": 4.505213800001002,
+  "total_s": 4.517503400000351,
+  "id": "q19",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/bigger-applications.md"
+  ]
+ },
+ {
+  "question": "Comment activer CORS ?",
+  "answer": "Pour activer CORS dans FastAPI, vous devez suivre ces étapes :\n\n1. Importer `CORSMiddleware`.\n2. Créer une liste des origines autorisées (en tant que chaînes de caractères).\n3. Ajouter `CORSMiddleware` comme \"middleware\" à votre application FastAPI.\n\nVous pouvez également spécifier si votre backend autorise les informations de session (Authorization headers, Cookies, etc.), les méthodes HTTP spécifiques (`POST`, `PUT`) ou toutes les méthodes avec le wildcard `\"*\"`, ainsi que les en-têtes HTTP spécifiques ou tous les en-têtes avec le wildcard `\"*\"`.\n\nPar exemple :\n\n```python\nfrom fastapi import FastAPI\nfrom starlette.middleware.cors import CORSMiddleware\n\napp = FastAPI()\n\napp.add_middleware(\n    CORSMiddleware,\n    allow_origins=[\"http://example.com\", \"http://localhost:3000\"],\n    allow-Methods=[\"*\"],\n    allow-Headers=[\"*\"],\n)\n```\n\nCes paramètres permettent de configurer explicitement les origines, méthodes et en-têtes autorisés, ce qui est nécessaire pour que les navigateurs puissent utiliser ces ressources dans un contexte Cross-Domain. [2] [4]",
+  "refused": false,
+  "sources": [
+   {
+    "score": 0.8733694553375244,
+    "source": "tutorial/cors.md",
+    "section": "CORS (Cross-Origin Resource Sharing)",
+    "text": "[CORS or \"Cross-Origin Resource Sharing\"](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) refers to the situations when a frontend running in a browser has JavaScript code that communicates with a backend, and the backend is in a different \"origin\" than the frontend."
+   },
+   {
+    "score": 0.8731400966644287,
+    "source": "tutorial/cors.md",
+    "section": "CORS (Cross-Origin Resource Sharing) > Use `CORSMiddleware` > CORS preflight requests",
+    "text": "These are any `OPTIONS` request with `Origin` and `Access-Control-Request-Method` headers.\n\nIn this case the middleware will intercept the incoming request and respond with appropriate CORS headers, and either a `200` or `400` response for informational purposes."
+   },
+   {
+    "score": 0.871864378452301,
+    "source": "tutorial/cors.md",
+    "section": "CORS (Cross-Origin Resource Sharing) > More info",
+    "text": "For more info about <abbr title=\"Cross-Origin Resource Sharing\">CORS</abbr>, check the [Mozilla CORS documentation](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS).\n\nYou could also use `from starlette.middleware.cors import CORSMiddleware`.\n\n**FastAPI** provides several middlewares in `fastapi.middleware` just as a convenience for you, the developer. But most of the available middlewares come directly from Starlette."
+   },
+   {
+    "score": 0.8691266179084778,
+    "source": "tutorial/cors.md",
+    "section": "CORS (Cross-Origin Resource Sharing) > Use `CORSMiddleware`",
+    "text": "You can configure it in your **FastAPI** application using the `CORSMiddleware`.\n\n* Import `CORSMiddleware`.\n* Create a list of allowed origins (as strings).\n* Add it as a \"middleware\" to your **FastAPI** application.\n\nYou can also specify whether your backend allows:\n\n* Credentials (Authorization headers, Cookies, etc).\n* Specific HTTP methods (`POST`, `PUT`) or all of them with the wildcard `\"*\"`.\n* Specific HTTP headers or all of them with the wildcard `\"*\"`.\n\nThe default parameters used by the `CORSMiddleware` implementation are restrictive by default, so you'll need to explicitly enable particular origins, methods, or headers, in order for browsers to be permitted to use them in a Cross-Domain context.\n\nThe following arguments are supported:"
+   }
+  ],
+  "retrieval_s": 0.010794199999509146,
+  "generation_s": 5.25169249999999,
+  "total_s": 5.262486699999499,
+  "id": "q20",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/cors.md"
+  ]
+ },
+ {
+  "question": "Comment servir des fichiers statiques ?",
+  "answer": "Pour servir des fichiers statiques, vous pouvez utiliser `StaticFiles`. Voici les étapes à suivre :\n\n1. Importez `StaticFiles` : `from fastapi import StaticFiles` [2]\n2. \"Mount\" un instance de `StaticFiles()` à un chemin spécifique : `app.mount(\"/static\", StaticFiles(directory=\"static\"), name=\"static\")` [1] [2]\n\nSi vous avez besoin d'héberger un frontend, utilisez `app.frontend()` au lieu de `StaticFiles`, car il offre des avantages supplémentaires pour les frontends, comme le traitement du routage client côté navigateur. [1]",
+  "refused": false,
+  "sources": [
+   {
+    "score": 0.8395583033561707,
+    "source": "tutorial/static-files.md",
+    "section": "Static Files",
+    "text": "You can serve static files automatically from a directory using `StaticFiles`.\n\nIf you need to host a frontend, use `app.frontend()` instead, read about it in [Frontend](frontend.md).\n\n`app.frontend()` uses `StaticFiles` underneath, with several additional advantages for frontends, like handling client-side routing."
+   },
+   {
+    "score": 0.8328942060470581,
+    "source": "tutorial/static-files.md",
+    "section": "Static Files > Use `StaticFiles`",
+    "text": "* Import `StaticFiles`.\n* \"Mount\" a `StaticFiles()` instance in a specific path.\n\nYou could also use `from starlette.staticfiles import StaticFiles`.\n\n**FastAPI** provides the same `starlette.staticfiles` as `fastapi.staticfiles` just as a convenience for you, the developer. But it actually comes directly from Starlette."
+   },
+   {
+    "score": 0.8244444727897644,
+    "source": "tutorial/static-files.md",
+    "section": "Static Files > More info",
+    "text": "For more details and options check [Starlette's docs about Static Files](https://starlette.dev/staticfiles/)."
+   },
+   {
+    "score": 0.8170823454856873,
+    "source": "tutorial/background-tasks.md",
+    "section": "Background Tasks > Recap",
+    "text": "Import and use `BackgroundTasks` with parameters in *path operation functions* and dependencies to add background tasks."
+   }
+  ],
+  "retrieval_s": 0.011859600001116632,
+  "generation_s": 3.804181100000278,
+  "total_s": 3.8160407000013947,
+  "id": "q21",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/static-files.md"
+  ]
+ },
+ {
+  "question": "Comment tester une application avec TestClient ?",
+  "answer": "Pour tester une application FastAPI avec TestClient, vous devez suivre ces étapes [1] :\n\n1. Installer `httpx` :\n```console\n$ uv add httpx\n```\n\n2. Importer `TestClient` :\n```python\nfrom fastapi.testclient import TestClient\n```\n\n3. Créer un `TestClient` en passant votre application FastAPI à celui-ci.\n\n4. Écrire des fonctions de test avec un nom commençant par `test_` (convention standard `pytest`).\n\n5. Utiliser le `TestClient` de la même manière que vous le feriez avec `httpx`.\n\n6. Écrire des déclarations `assert` avec des expressions Python standard pour vérifier les conditions.\n\n7. Les appels au client sont des appels normaux, pas `await`.\n\nCela vous permet d'utiliser directement `pytest` sans complications.",
+  "refused": false,
+  "sources": [
+   {
+    "score": 0.8629522919654846,
+    "source": "tutorial/testing.md",
+    "section": "Testing > Using `TestClient`",
+    "text": "To use `TestClient`, first install [`httpx`](https://www.python-httpx.org).\n\nAdd it to your project:\n\n```console\n$ uv add httpx\n```\n\nImport `TestClient`.\n\nCreate a `TestClient` by passing your **FastAPI** application to it.\n\nCreate functions with a name that starts with `test_` (this is a standard `pytest` convention).\n\nUse the `TestClient` object the same way as you do with `httpx`.\n\nWrite simple `assert` statements with the standard Python expressions that you need to check (again, standard `pytest`).\n\nNotice that the testing functions are normal `def`, not `async def`.\n\nAnd the calls to the client are also normal calls, not using `await`.\n\nThis allows you to use `pytest` directly without complications.\n\nYou could also use `from starlette.testclient import TestClient`.\n\n**FastAPI** provides the same `starlette.testclient` as `fastapi.testclient` just as a convenience for you, the developer. But it comes directly from Starlette."
+   },
+   {
+    "score": 0.8547205328941345,
+    "source": "tutorial/testing.md",
+    "section": "Testing > Using `TestClient`",
+    "text": "If you want to call `async` functions in your tests apart from sending requests to your FastAPI application (e.g. asynchronous database functions), have a look at the [Async Tests](../advanced/async-tests.md) in the advanced tutorial."
+   },
+   {
+    "score": 0.8457198143005371,
+    "source": "tutorial/testing.md",
+    "section": "Testing > Testing: extended example > Extended testing file",
+    "text": "Note that the `TestClient` receives data that can be converted to JSON, not Pydantic models.\n\nIf you have a Pydantic model in your test and you want to send its data to the application during testing, you can use the `jsonable_encoder` described in [JSON Compatible Encoder](encoder.md)."
+   },
+   {
+    "score": 0.8351102471351624,
+    "source": "tutorial/testing.md",
+    "section": "Testing",
+    "text": "Thanks to [Starlette](https://starlette.dev/testclient/), testing **FastAPI** applications is easy and enjoyable.\n\nIt is based on [HTTPX](https://www.python-httpx.org), which in turn is designed based on Requests, so it's very familiar and intuitive.\n\nWith it, you can use [pytest](https://docs.pytest.org/) directly with **FastAPI**."
+   }
+  ],
+  "retrieval_s": 0.011300799998934963,
+  "generation_s": 4.402448900000309,
+  "total_s": 4.413749699999244,
+  "id": "q22",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/testing.md"
+  ]
+ },
+ {
+  "question": "Comment ajouter un middleware personnalisé ?",
+  "answer": "Pour ajouter un middleware personnalisé, vous utilisez le décorateur `@app.middleware(\"http\")` sur une fonction. Voici un exemple basé sur l'extrait fourni :\n\n```python\nfrom fastapi import FastAPI, Request\nfrom starlette.middleware.base import BaseHTTPMiddleware\n\napp = FastAPI()\n\nclass CustomMiddleware(BaseHTTPMiddleware):\n    async def dispatch(self, request: Request, call_next):\n        # Code à exécuter avant la requête\n        print(\"Middleware avant la requête\")\n\n        response = await call_next(request)\n\n        # Code à exécuter après la réponse\n        print(\"Middleware après la réponse\")\n\n        return response\n\napp.add_middleware(CustomMiddleware)\n```\n\nCe middleware personnalisé est ajouté à l'aide de `app.add_middleware(CustomMiddleware)`. Le décorateur `@app.middleware(\"http\")` est utilisé pour indiquer que ce middleware s'applique à toutes les requêtes HTTP.",
+  "refused": false,
+  "sources": [
+   {
+    "score": 0.855339527130127,
+    "source": "tutorial/middleware.md",
+    "section": "Middleware > Create a middleware",
+    "text": "To create a middleware you use the decorator `@app.middleware(\"http\")` on top of a function.\n\nThe middleware function receives:\n\n* The `request`.\n* A function `call_next` that will receive the `request` as a parameter.\n    * This function will pass the `request` to the corresponding *path operation*.\n    * Then it returns the `response` generated by the corresponding *path operation*.\n* You can then further modify the `response` before returning it.\n\nKeep in mind that custom proprietary headers can be added [using the `X-` prefix](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers).\n\nBut if you have custom headers that you want a client in a browser to be able to see, you need to add them to your CORS configurations ([CORS (Cross-Origin Resource Sharing)](cors.md)) using the parameter `expose_headers` documented in [Starlette's CORS docs](https://starlette.dev/middleware/#corsmiddleware).\n\nYou could also use `from starlette.requests import Request`."
+   },
+   {
+    "score": 0.846316933631897,
+    "source": "tutorial/middleware.md",
+    "section": "Middleware > Create a middleware",
+    "text": "You could also use `from starlette.requests import Request`.\n\n**FastAPI** provides it as a convenience for you, the developer. But it comes directly from Starlette."
+   },
+   {
+    "score": 0.8391819000244141,
+    "source": "tutorial/middleware.md",
+    "section": "Middleware > Multiple middleware execution order",
+    "text": "When you add multiple middlewares using either `@app.middleware()` decorator or `app.add_middleware()` method, each new middleware wraps the application, forming a stack. The last middleware added is the *outermost*, and the first is the *innermost*.\n\nOn the request path, the *outermost* middleware runs first.\n\nOn the response path, it runs last.\n\nFor example:\n\n```Python\napp.add_middleware(MiddlewareA)\napp.add_middleware(MiddlewareB)\n```\n\nThis results in the following execution order:\n\n* **Request**: MiddlewareB → MiddlewareA → route\n\n* **Response**: route → MiddlewareA → MiddlewareB\n\nThis stacking behavior ensures that middlewares are executed in a predictable and controllable order."
+   },
+   {
+    "score": 0.8368604183197021,
+    "source": "tutorial/middleware.md",
+    "section": "Middleware",
+    "text": "You can add middleware to **FastAPI** applications.\n\nA \"middleware\" is a function that works with every **request** before it is processed by any specific *path operation*. And also with every **response** before returning it.\n\n* It takes each **request** that comes to your application.\n* It can then do something to that **request** or run any needed code.\n* Then it passes the **request** to be processed by the rest of the application (by some *path operation*).\n* It then takes the **response** generated by the application (by some *path operation*).\n* It can do something to that **response** or run any needed code.\n* Then it returns the **response**.\n\nIf you have dependencies with `yield`, the exit code will run *after* the middleware.\n\nIf there were any background tasks (covered in the [Background Tasks](background-tasks.md) section, you will see it later), they will run *after* all the middleware."
+   }
+  ],
+  "retrieval_s": 0.012629900000320049,
+  "generation_s": 4.61178739999923,
+  "total_s": 4.62441729999955,
+  "id": "q23",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/middleware.md"
+  ]
+ },
+ {
+  "question": "Comment lancer mon application dans un débogueur ?",
+  "answer": "Pour lancer votre application dans un débogueur, vous pouvez suivre ces étapes selon votre environnement de développement :\n\n### Avec Visual Studio Code :\n1. Ouvrez le panneau \"Debug\".\n2. Cliquez sur \"Add configuration...\".\n3. Sélectionnez \"Python\".\n4. Utilisez l'option \"Python: Current File (Integrated Terminal)\" pour démarrer le débogueur.\n5. Le serveur Uvicorn démarrera avec votre code FastAPI, et vous pourrez mettre des points d'arrêt.\n\n### Avec PyCharm :\n1. Ouvrez le menu \"Run\".\n2. Sélectionnez \"Debug...\".\n3. Un menu contextuel s'affiche.\n4. Choisissez le fichier à déboguer (par exemple, `main.py`).\n5. Le serveur Uvicorn démarrera avec votre code FastAPI, et vous pourrez mettre des points d'arrêt.\n\nCes étapes vous permettront de déboguer votre application FastAPI directement depuis votre code.",
+  "refused": false,
+  "sources": [
+   {
+    "score": 0.8279703855514526,
+    "source": "tutorial/first-steps.md",
+    "section": "First Steps > Recap",
+    "text": "* Import `FastAPI`.\n* Create an `app` instance.\n* Write a **path operation decorator** using decorators like `@app.get(\"/\")`.\n* Define a **path operation function**; for example, `def root(): ...`.\n* Run the development server using the command `fastapi dev`.\n* Optionally deploy your app with `fastapi deploy`."
+   },
+   {
+    "score": 0.8246656656265259,
+    "source": "tutorial/debugging.md",
+    "section": "Debugging > Run your code with your debugger",
+    "text": "Because you are running the Uvicorn server directly from your code, you can call your Python program (your FastAPI application) directly from the debugger.\n\n---\n\nFor example, in Visual Studio Code, you can:\n\n* Go to the \"Debug\" panel.\n* \"Add configuration...\".\n* Select \"Python\"\n* Run the debugger with the option \"`Python: Current File (Integrated Terminal)`\".\n\nIt will then start the server with your **FastAPI** code, stop at your breakpoints, etc.\n\nHere's how it might look:\n\n<img src=\"/img/tutorial/debugging/image01.png\">\n\n---\n\nIf you use PyCharm, you can:\n\n* Open the \"Run\" menu.\n* Select the option \"Debug...\".\n* Then a context menu shows up.\n* Select the file to debug (in this case, `main.py`).\n\nIt will then start the server with your **FastAPI** code, stop at your breakpoints, etc.\n\nHere's how it might look:\n\n<img src=\"/img/tutorial/debugging/image02.png\">"
+   },
+   {
+    "score": 0.8246490359306335,
+    "source": "tutorial/first-steps.md",
+    "section": "First Steps > Recap, step by step > Step 6: Deploy it",
+    "text": "Deploy your app to **[FastAPI Cloud](https://fastapicloud.com)** with one command: `fastapi deploy`. 🎉"
+   },
+   {
+    "score": 0.8182942271232605,
+    "source": "tutorial/first-steps.md",
+    "section": "First Steps > Deploy your app (optional)",
+    "text": "You can optionally deploy your FastAPI app to [FastAPI Cloud](https://fastapicloud.com) with a single command. 🚀\n\n<div class=\"termy\">\n\n```console\n$ uv run fastapi deploy\n\nDeploying to FastAPI Cloud...\n\n✅ Deployment successful!\n\n🐔 Ready the chicken! Your app is ready at https://myapp.fastapicloud.dev\n```\n\n</div>\n\nThe CLI will automatically detect your FastAPI application and deploy it to the cloud. If you are not logged in, your browser will open to complete the authentication process.\n\nThat's it! Now you can access your app at that URL. ✨"
+   }
+  ],
+  "retrieval_s": 0.012319699999352451,
+  "generation_s": 4.847575399999187,
+  "total_s": 4.859895099998539,
+  "id": "q24",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/debugging.md"
+  ]
+ },
+ {
+  "question": "Comment utiliser une base de données SQL avec SQLModel ?",
+  "answer": "Pour utiliser une base de données SQL avec SQLModel, vous pouvez suivre ces étapes :\n\n1. Ajoutez `sqlmodel` à votre projet en utilisant la commande :\n   ```\n   $ uv add sqlmodel\n   ---> 100%\n   ```\n\n2. Utilisez SQLModel pour interagir avec une base de données SQL. Par exemple, vous pouvez créer des modèles de données et de tables qui correspondent à vos tables SQL.\n\n3. SQLModel est basé sur SQLAlchemy, donc vous pouvez utiliser n'importe quelle base de données supportée par SQLAlchemy, comme PostgreSQL, MySQL, SQLite, Oracle, Microsoft SQL Server, etc.\n\n4. Vous pouvez créer des modèles de base partagés entre plusieurs modèles, comme `HeroBase` qui contient des champs partagés tels que `name` et `age`.\n\nPour plus de détails, consultez la documentation de SQLModel, notamment le mini-tutoriel sur l'utilisation de SQLModel avec FastAPI [1][2].",
+  "refused": false,
+  "sources": [
+   {
+    "score": 0.8662523031234741,
+    "source": "tutorial/sql-databases.md",
+    "section": "SQL (Relational) Databases",
+    "text": "**FastAPI** doesn't require you to use a SQL (relational) database. But you can use **any database** that you want.\n\nHere we'll see an example using [SQLModel](https://sqlmodel.tiangolo.com/).\n\n**SQLModel** is built on top of [SQLAlchemy](https://www.sqlalchemy.org/) and Pydantic. It was made by the same author of **FastAPI** to be the perfect match for FastAPI applications that need to use **SQL databases**.\n\nYou could use any other SQL or NoSQL database library you want (in some cases called <abbr title=\"Object Relational Mapper: a fancy term for a library where some classes represent SQL tables and instances represent rows in those tables\">\"ORMs\"</abbr>), FastAPI doesn't force you to use anything. 😎\n\nAs SQLModel is based on SQLAlchemy, you can easily use **any database supported** by SQLAlchemy (which makes them also supported by SQLModel), like:\n\n* PostgreSQL\n* MySQL\n* SQLite\n* Oracle\n* Microsoft SQL Server, etc."
+   },
+   {
+    "score": 0.8647879362106323,
+    "source": "tutorial/sql-databases.md",
+    "section": "SQL (Relational) Databases > Recap",
+    "text": "You can use [**SQLModel**](https://sqlmodel.tiangolo.com/) to interact with a SQL database and simplify the code with *data models*  and *table models*.\n\nYou can learn a lot more at the **SQLModel** docs, there's a longer mini [tutorial on using SQLModel with **FastAPI**](https://sqlmodel.tiangolo.com/tutorial/fastapi/). 🚀"
+   },
+   {
+    "score": 0.8626678586006165,
+    "source": "tutorial/sql-databases.md",
+    "section": "SQL (Relational) Databases > Update the App with Multiple Models > Create Multiple Models > `HeroBase` - the base class",
+    "text": "Let's start with a `HeroBase` model that has all the **fields that are shared** by all the models:\n\n* `name`\n* `age`"
+   },
+   {
+    "score": 0.85768061876297,
+    "source": "tutorial/sql-databases.md",
+    "section": "SQL (Relational) Databases > Install `SQLModel`",
+    "text": "Add `sqlmodel` to your project:\n\n<div class=\"termy\">\n\n```console\n$ uv add sqlmodel\n---> 100%\n```\n\n</div>"
+   }
+  ],
+  "retrieval_s": 0.011873499999637716,
+  "generation_s": 4.727403400000185,
+  "total_s": 4.7392768999998225,
+  "id": "q25",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/sql-databases.md"
+  ]
+ },
+ {
+  "question": "Comment protéger une route avec un token JWT ?",
+  "answer": "Pour protéger une route avec un token JWT, vous devez suivre ces étapes :\n\n1. Mettez à jour `get_current_user` pour qu'il reçoive le token JWT, le décode et vérifie le token avant de retourner l'utilisateur actuel [3].\n\n2. Si le token est invalide, retournez une erreur HTTP immédiatement [3].\n\nCes étapes garantissent que seuls les utilisateurs authentifiés peuvent accéder à la route protégée.",
+  "refused": false,
+  "sources": [
+   {
+    "score": 0.8423416614532471,
+    "source": "tutorial/security/oauth2-jwt.md",
+    "section": "OAuth2 with Password (and hashing), Bearer with JWT tokens > Update the `/token` *path operation*",
+    "text": "Create a `timedelta` with the expiration time of the token.\n\nCreate a real JWT access token and return it."
+   },
+   {
+    "score": 0.8363508582115173,
+    "source": "tutorial/security/oauth2-jwt.md",
+    "section": "OAuth2 with Password (and hashing), Bearer with JWT tokens",
+    "text": "Now that we have all the security flow, let's make the application actually secure, using <abbr title=\"JSON Web Tokens\">JWT</abbr> tokens and secure password hashing.\n\nThis code is something you can actually use in your application, save the password hashes in your database, etc.\n\nWe are going to start from where we left in the previous chapter and increment it."
+   },
+   {
+    "score": 0.8327252864837646,
+    "source": "tutorial/security/oauth2-jwt.md",
+    "section": "OAuth2 with Password (and hashing), Bearer with JWT tokens > Update the dependencies",
+    "text": "Update `get_current_user` to receive the same token as before, but this time, using JWT tokens.\n\nDecode the received token, verify it, and return the current user.\n\nIf the token is invalid, return an HTTP error right away."
+   },
+   {
+    "score": 0.8306832909584045,
+    "source": "tutorial/security/oauth2-jwt.md",
+    "section": "OAuth2 with Password (and hashing), Bearer with JWT tokens > Handle JWT tokens",
+    "text": "Import the modules installed.\n\nCreate a random secret key that will be used to sign the JWT tokens.\n\nTo generate a secure random secret key use the command:\n\n<div class=\"termy\">\n\n```console\n$ openssl rand -hex 32\n\n09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7\n```\n\n</div>\n\nAnd copy the output to the variable `SECRET_KEY` (don't use the one in the example).\n\nCreate a variable `ALGORITHM` with the algorithm used to sign the JWT token and set it to `\"HS256\"`.\n\nCreate a variable for the expiration of the token.\n\nDefine a Pydantic Model that will be used in the token endpoint for the response.\n\nCreate a utility function to generate a new access token."
+   }
+  ],
+  "retrieval_s": 0.011220499998671585,
+  "generation_s": 3.496588600000905,
+  "total_s": 3.5078090999995766,
+  "id": "q26",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/security/oauth2-jwt.md"
+  ]
+ },
+ {
+  "question": "Comment récupérer l'utilisateur courant dans une route sécurisée ?",
+  "answer": "Pour récupérer l'utilisateur courant dans une route sécurisée, vous pouvez directement utiliser la fonction `get_current_user` dans votre *path operation function*, comme indiqué dans le tutoriel [1] et [2]. Cela permet d'obtenir directement les informations de l'utilisateur authentifié sans avoir à gérer le token vous-même.",
+  "refused": false,
+  "sources": [
+   {
+    "score": 0.8387273550033569,
+    "source": "tutorial/security/get-current-user.md",
+    "section": "Get Current User > Recap",
+    "text": "You can now get the current user directly in your *path operation function*.\n\nWe are already halfway there.\n\nWe just need to add a *path operation* for the user/client to actually send the `username` and `password`.\n\nThat comes next."
+   },
+   {
+    "score": 0.8352178931236267,
+    "source": "tutorial/security/get-current-user.md",
+    "section": "Get Current User",
+    "text": "In the previous chapter the security system (which is based on the dependency injection system) was giving the *path operation function* a `token` as a `str`:\n\nBut that is still not that useful.\n\nLet's make it give us the current user."
+   },
+   {
+    "score": 0.8306507468223572,
+    "source": "tutorial/security/simple-oauth2.md",
+    "section": "Simple OAuth2 with Password and Bearer > See it in action > Get your own user data",
+    "text": "Now use the operation `GET` with the path `/users/me`.\n\nYou will get your user's data, like:\n\n```JSON\n{\n  \"username\": \"johndoe\",\n  \"email\": \"johndoe@example.com\",\n  \"full_name\": \"John Doe\",\n  \"disabled\": false,\n  \"hashed_password\": \"fakehashedsecret\"\n}\n```\n\n<img src=\"/img/tutorial/security/image06.png\">\n\nIf you click the lock icon and logout, and then try the same operation again, you will get an HTTP 401 error of:\n\n```JSON\n{\n  \"detail\": \"Not authenticated\"\n}\n```"
+   },
+   {
+    "score": 0.8299276828765869,
+    "source": "tutorial/security/first-steps.md",
+    "section": "Security - First Steps > Check it",
+    "text": "Go to the interactive docs at: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).\n\nYou will see something like this:\n\n<img src=\"/img/tutorial/security/image01.png\">\n\nYou already have a shiny new \"Authorize\" button.\n\nAnd your *path operation* has a little lock in the top-right corner that you can click.\n\nAnd if you click it, you have a little authorization form to type a `username` and `password` (and other optional fields):\n\n<img src=\"/img/tutorial/security/image02.png\">\n\nIt doesn't matter what you type in the form, it won't work yet. But we'll get there.\n\nThis is of course not the frontend for the final users, but it's a great automatic tool to document interactively all your API.\n\nIt can be used by the frontend team (that can also be yourself).\n\nIt can be used by third party applications and systems.\n\nAnd it can also be used by yourself, to debug, check and test the same application."
+   }
+  ],
+  "retrieval_s": 0.012028700000882964,
+  "generation_s": 3.183901099999275,
+  "total_s": 3.195929800000158,
+  "id": "q27",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/security/get-current-user.md"
+  ]
+ },
+ {
+  "question": "Comment implémenter le flux OAuth2 avec nom d'utilisateur et mot de passe ?",
+  "answer": "Pour implémenter le flux OAuth2 avec nom d'utilisateur et mot de passe, vous devez utiliser les outils fournis par FastAPI comme indiqué dans l'extrait [3]. Les noms de champs `username` et `password` doivent être utilisés car c'est ce que spécifie le protocole OAuth2. Ces champs doivent être envoyés en tant que données de formulaire, pas en JSON. Voici un exemple de comment cela peut être fait :\n\n```python\nfrom fastapi import FastAPI, Depends, HTTPException\nfrom fastapi.security import OAuth2PasswordRequestForm\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\nclass User(BaseModel):\n    username: str\n    email: str\n    full_name: str = None\n    disabled: bool = None\n\n# Ici, vous devriez avoir une fonction pour vérifier les identifiants\ndef fake_decode_token(username: str):\n    return User(username=username)\n\n@app.post(\"/login\")\nasync def login(form_data: OAuth2PasswordRequestForm = Depends()):\n    user = fake_decode_token(form_data.username)\n    if not user:\n        raise HTTPException(status_code=400, detail=\"Invalid username or password\")\n    return {\"access_token\": user.username, \"token_type\": \"bearer\"}\n```\n\nCe code utilise `OAuth2PasswordRequestForm` pour obtenir les `username` et `password` en tant que données de formulaire.",
+  "refused": false,
+  "sources": [
+   {
+    "score": 0.8835920095443726,
+    "source": "tutorial/security/simple-oauth2.md",
+    "section": "Simple OAuth2 with Password and Bearer > Code to get the `username` and `password`",
+    "text": "Now let's use the utilities provided by **FastAPI** to handle this."
+   },
+   {
+    "score": 0.872782826423645,
+    "source": "tutorial/security/simple-oauth2.md",
+    "section": "Simple OAuth2 with Password and Bearer > See it in action > Get your own user data",
+    "text": "Now use the operation `GET` with the path `/users/me`.\n\nYou will get your user's data, like:\n\n```JSON\n{\n  \"username\": \"johndoe\",\n  \"email\": \"johndoe@example.com\",\n  \"full_name\": \"John Doe\",\n  \"disabled\": false,\n  \"hashed_password\": \"fakehashedsecret\"\n}\n```\n\n<img src=\"/img/tutorial/security/image06.png\">\n\nIf you click the lock icon and logout, and then try the same operation again, you will get an HTTP 401 error of:\n\n```JSON\n{\n  \"detail\": \"Not authenticated\"\n}\n```"
+   },
+   {
+    "score": 0.872165322303772,
+    "source": "tutorial/security/simple-oauth2.md",
+    "section": "Simple OAuth2 with Password and Bearer > Get the `username` and `password`",
+    "text": "We are going to use **FastAPI** security utilities to get the `username` and `password`.\n\nOAuth2 specifies that when using the \"password flow\" (that we are using) the client/user must send `username` and `password` fields as form data.\n\nAnd the spec says that the fields have to be named like that. So `user-name` or `email` wouldn't work.\n\nBut don't worry, you can show it as you wish to your final users in the frontend.\n\nAnd your database models can use any other names you want.\n\nBut for the login *path operation*, we need to use these names to be compatible with the spec (and be able to, for example, use the integrated API documentation system).\n\nThe spec also states that the `username` and `password` must be sent as form data (so, no JSON here)."
+   },
+   {
+    "score": 0.8672484755516052,
+    "source": "tutorial/security/simple-oauth2.md",
+    "section": "Simple OAuth2 with Password and Bearer",
+    "text": "Now let's build from the previous chapter and add the missing parts to have a complete security flow."
+   }
+  ],
+  "retrieval_s": 0.012388799999826006,
+  "generation_s": 5.645372500001031,
+  "total_s": 5.657761300000857,
+  "id": "q28",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/security/simple-oauth2.md"
+  ]
+ },
+ {
+  "question": "Comment utiliser une dépendance avec yield ?",
+  "answer": "Pour utiliser une dépendance avec `yield`, vous pouvez suivre ces étapes :\n\n1. Utilisez une fonction `async` ou régulière.\n2. Placez le code qui doit se dérouler avant la réponse jusqu'au `yield`.\n3. Le code après le `yield` sera exécuté après la réponse.\n4. Le `yield` injecte la valeur retournée dans les opérations de chemin et d'autres dépendances.\n5. Vous pouvez avoir des dépendances imbriquées avec `yield`, et **FastAPI** s'assurera que le code d'exit est exécuté dans le bon ordre.\n\nVoici un exemple basé sur les extraits fournis :\n\n```python\nasync def get_db_session() -> Session:\n    db = SessionLocal()\n    try:\n        yield db\n    finally:\n        db.close()\n```\n\nCe code crée une session de base de données, l'injecte dans les opérations de chemin, et la ferme après la réponse.",
+  "refused": false,
+  "sources": [
+   {
+    "score": 0.8479321599006653,
+    "source": "tutorial/dependencies/dependencies-with-yield.md",
+    "section": "Dependencies with yield > A database dependency with `yield`",
+    "text": "For example, you could use this to create a database session and close it after finishing.\n\nOnly the code prior to and including the `yield` statement is executed before creating a response:\n\nThe yielded value is what is injected into *path operations* and other dependencies:\n\nThe code following the `yield` statement is executed after the response:\n\nYou can use `async` or regular functions.\n\n**FastAPI** will do the right thing with each, the same as with normal dependencies."
+   },
+   {
+    "score": 0.8400354981422424,
+    "source": "tutorial/dependencies/dependencies-with-yield.md",
+    "section": "Dependencies with yield > Early exit and `scope` > `scope` for sub-dependencies",
+    "text": "```mermaid\nsequenceDiagram\n\nparticipant client as Client\nparticipant dep_req as Dep scope=\"request\"\nparticipant dep_func as Dep scope=\"function\"\nparticipant operation as Path Operation\n\n    client ->> dep_req: Start request\n    Note over dep_req: Run code up to yield\n    dep_req ->> dep_func: Pass dependency\n    Note over dep_func: Run code up to yield\n    dep_func ->> operation: Run path operation with dependency\n    operation ->> dep_func: Return from path operation\n    Note over dep_func: Run code after yield\n    Note over dep_func: ✅ Dependency closed\n    dep_func ->> client: Send response to client\n    Note over client: Response sent\n    Note over dep_req: Run code after yield\n    Note over dep_req: ✅ Dependency closed\n```"
+   },
+   {
+    "score": 0.8377627730369568,
+    "source": "tutorial/dependencies/dependencies-with-yield.md",
+    "section": "Dependencies with yield > Sub-dependencies with `yield`",
+    "text": "You can have sub-dependencies and \"trees\" of sub-dependencies of any size and shape, and any or all of them can use `yield`.\n\n**FastAPI** will make sure that the \"exit code\" in each dependency with `yield` is run in the correct order.\n\nFor example, `dependency_c` can have a dependency on `dependency_b`, and `dependency_b` on `dependency_a`:\n\nAnd all of them can use `yield`.\n\nIn this case `dependency_c`, to execute its exit code, needs the value from `dependency_b` (here named `dep_b`) to still be available.\n\nAnd, in turn, `dependency_b` needs the value from `dependency_a` (here named `dep_a`) to be available for its exit code.\n\nThe same way, you could have some dependencies with `yield` and some other dependencies with `return`, and have some of those depend on some of the others.\n\nAnd you could have a single dependency that requires several other dependencies with `yield`, etc.\n\nYou can have any combinations of dependencies that you want."
+   },
+   {
+    "score": 0.8351088166236877,
+    "source": "tutorial/dependencies/dependencies-with-yield.md",
+    "section": "Dependencies with yield > Dependencies with `yield` and `except` > Always `raise` in Dependencies with `yield` and `except`",
+    "text": "If you catch an exception in a dependency with `yield`, unless you are raising another `HTTPException` or similar, **you should re-raise the original exception**.\n\nYou can re-raise the same exception using `raise`:\n\nNow the client will get the same *HTTP 500 Internal Server Error* response, but the server will have our custom `InternalError` in the logs. 😎"
+   }
+  ],
+  "retrieval_s": 0.013344400000278256,
+  "generation_s": 4.8713678999993135,
+  "total_s": 4.884712299999592,
+  "id": "q29",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/dependencies/dependencies-with-yield.md"
+  ]
+ },
+ {
+  "question": "Comment utiliser une classe comme dépendance ?",
+  "answer": "Pour utiliser une classe comme dépendance, vous pouvez la déclarer en utilisant `Annotated` pour indiquer le type, comme ceci :\n\n```python\ncommons: Annotated[CommonQueryParams, Depends]\n```\n\nCela permet à votre éditeur d'environnement de comprendre le type de `commons`, offrant ainsi des suggestions de complétion et des vérifications de types [2].\n\nVous pouvez également utiliser une version plus concise avec `Annotated` :\n\n```python\ncommons: CommonQueryParams = Depends()\n```\n\nCela indique à FastAPI de dépendre de l'instance `CommonQueryParams` sans la réécrire à l'intérieur de `Depends` [4].",
+  "refused": false,
+  "sources": [
+   {
+    "score": 0.8357493877410889,
+    "source": "tutorial/dependencies/classes-as-dependencies.md",
+    "section": "Classes as Dependencies",
+    "text": "Before diving deeper into the **Dependency Injection** system, let's upgrade the previous example."
+   },
+   {
+    "score": 0.826628565788269,
+    "source": "tutorial/dependencies/classes-as-dependencies.md",
+    "section": "Classes as Dependencies > Type annotation vs `Depends`",
+    "text": "You could actually write just:\n\n```Python\ncommons: Annotated[Any, Depends(CommonQueryParams)]\n```\n\nPrefer to use the `Annotated` version if possible.\n\n```Python\ncommons = Depends(CommonQueryParams)\n```\n\n...as in:\n\nBut declaring the type is encouraged as that way your editor will know what will be passed as the parameter `commons`, and then it can help you with code completion, type checks, etc:\n\n<img src=\"/img/tutorial/dependencies/image02.png\">"
+   },
+   {
+    "score": 0.8221435546875,
+    "source": "tutorial/dependencies/classes-as-dependencies.md",
+    "section": "Classes as Dependencies > A `dict` from the previous example",
+    "text": "In the previous example, we were returning a `dict` from our dependency (\"dependable\"):\n\nBut then we get a `dict` in the parameter `commons` of the *path operation function*.\n\nAnd we know that editors can't provide a lot of support (like completion) for `dict`s, because they can't know their keys and value types.\n\nWe can do better..."
+   },
+   {
+    "score": 0.8208858370780945,
+    "source": "tutorial/dependencies/classes-as-dependencies.md",
+    "section": "Classes as Dependencies > Shortcut",
+    "text": "Prefer to use the `Annotated` version if possible.\n\n```Python\ncommons: CommonQueryParams = Depends()\n```\n\nYou declare the dependency as the type of the parameter, and you use `Depends()` without any parameter, instead of having to write the full class *again* inside of `Depends(CommonQueryParams)`.\n\nThe same example would then look like:\n\n...and **FastAPI** will know what to do.\n\nIf that seems more confusing than helpful, disregard it, you don't *need* it.\n\nIt is just a shortcut. Because **FastAPI** cares about helping you minimize code repetition."
+   }
+  ],
+  "retrieval_s": 0.012833799999498297,
+  "generation_s": 4.072294600000532,
+  "total_s": 4.0851284000000305,
+  "id": "q30",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/dependencies/classes-as-dependencies.md"
+  ]
+ },
+ {
+  "question": "Comment appliquer une dépendance à toute l'application ?",
+  "answer": "Pour appliquer une dépendance à toute l'application, vous pouvez l'ajouter directement au `FastAPI` application, au lieu d'ajouter des dépendances aux décorateurs des opérations de chemin. Cela appliquera la dépendance à toutes les opérations de chemin de l'application [1][2].",
+  "refused": false,
+  "sources": [
+   {
+    "score": 0.8493587374687195,
+    "source": "tutorial/dependencies/global-dependencies.md",
+    "section": "Global Dependencies",
+    "text": "For some types of applications you might want to add dependencies to the whole application.\n\nSimilar to the way you can [add `dependencies` to the *path operation decorators*](dependencies-in-path-operation-decorators.md), you can add them to the `FastAPI` application.\n\nIn that case, they will be applied to all the *path operations* in the application:\n\nAnd all the ideas in the section about [adding `dependencies` to the *path operation decorators*](dependencies-in-path-operation-decorators.md) still apply, but in this case, to all of the *path operations* in the app."
+   },
+   {
+    "score": 0.843936562538147,
+    "source": "tutorial/dependencies/dependencies-in-path-operation-decorators.md",
+    "section": "Dependencies in path operation decorators > Global Dependencies",
+    "text": "Next we will see how to add dependencies to the whole `FastAPI` application, so that they apply to each *path operation*."
+   },
+   {
+    "score": 0.8431150913238525,
+    "source": "tutorial/sql-databases.md",
+    "section": "SQL (Relational) Databases > Create the App with a Single Model > Create a Session Dependency",
+    "text": "A **`Session`** is what stores the **objects in memory** and keeps track of any changes needed in the data, then it **uses the `engine`** to communicate with the database.\n\nWe will create a FastAPI **dependency** with `yield` that will provide a new `Session` for each request. This is what ensures that we use a single session per request. 🤓\n\nThen we create an `Annotated` dependency `SessionDep` to simplify the rest of the code that will use this dependency."
+   },
+   {
+    "score": 0.8407353162765503,
+    "source": "tutorial/dependencies/index.md",
+    "section": "Dependencies > First Steps",
+    "text": "Let's see a very simple example. It will be so simple that it is not very useful, for now.\n\nBut this way we can focus on how the **Dependency Injection** system works."
+   }
+  ],
+  "retrieval_s": 0.013137199999619043,
+  "generation_s": 3.155714300000909,
+  "total_s": 3.168851500000528,
+  "id": "q31",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/dependencies/global-dependencies.md",
+   "tutorial/dependencies/dependencies-in-path-operation-decorators.md"
+  ]
+ },
+ {
+  "question": "Comment déclarer des sous-dépendances ?",
+  "answer": "Pour déclarer des sous-dépendances, vous pouvez créer une fonction dépendance (un \"dependable\") qui elle-même déclare une autre dépendance (un \"dependant\"). Par exemple, la fonction \"dependable\" peut dépendre de `query_extractor` et assigner sa valeur à un paramètre `q`, tout en déclarant également un cookie optionnel `last_query` de type `str` [1]. FastAPI gère la résolution de ces dépendances de manière récursive [3].",
+  "refused": false,
+  "sources": [
+   {
+    "score": 0.8283929824829102,
+    "source": "tutorial/dependencies/sub-dependencies.md",
+    "section": "Sub-dependencies > Second dependency, \"dependable\" and \"dependant\"",
+    "text": "Then you can create another dependency function (a \"dependable\") that at the same time declares a dependency of its own (so it is a \"dependant\" too):\n\nLet's focus on the parameters declared:\n\n* Even though this function is a dependency (\"dependable\") itself, it also declares another dependency (it \"depends\" on something else).\n    * It depends on the `query_extractor`, and assigns the value returned by it to the parameter `q`.\n* It also declares an optional `last_query` cookie, as a `str`.\n    * If the user didn't provide any query `q`, we use the last query used, which we saved to a cookie before."
+   },
+   {
+    "score": 0.8277062773704529,
+    "source": "tutorial/dependencies/sub-dependencies.md",
+    "section": "Sub-dependencies > First dependency \"dependable\"",
+    "text": "You could create a first dependency (\"dependable\") like:\n\nIt declares an optional query parameter `q` as a `str`, and then it just returns it.\n\nThis is quite simple (not very useful), but will help us focus on how the sub-dependencies work."
+   },
+   {
+    "score": 0.8221015334129333,
+    "source": "tutorial/dependencies/sub-dependencies.md",
+    "section": "Sub-dependencies",
+    "text": "You can create dependencies that have **sub-dependencies**.\n\nThey can be as **deep** as you need them to be.\n\n**FastAPI** will take care of solving them."
+   },
+   {
+    "score": 0.8211166858673096,
+    "source": "tutorial/dependencies/dependencies-in-path-operation-decorators.md",
+    "section": "Dependencies in path operation decorators > Dependencies errors and return values > Dependency requirements",
+    "text": "They can declare request requirements (like headers) or other sub-dependencies:"
+   }
+  ],
+  "retrieval_s": 0.013375900000028196,
+  "generation_s": 3.5445901000002777,
+  "total_s": 3.557966000000306,
+  "id": "q32",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/dependencies/sub-dependencies.md"
+  ]
+ },
+ {
+  "question": "Comment ajouter des métadonnées et une description à l'API ?",
+  "answer": "Pour ajouter des métadonnées et une description à l'API, vous pouvez utiliser les paramètres suivants :\n\n- `title` : Le titre de l'API.\n- `summary` : Une brève sommaire de l'API. Disponible depuis OpenAPI 3.1.0 et FastAPI 0.99.0.\n- `description` : Une brève description de l'API. Vous pouvez utiliser Markdown pour formater le texte.\n- `version` : La version de l'API, qui est la version de votre application et non de l'OpenAPI.\n- `terms_of_service` : Un URL vers les conditions d'utilisation de l'API. Si fourni, il doit être un URL.\n\nVous pouvez les configurer comme suit :\n\n```python\nfrom fastapi import FastAPI\n\napp = FastAPI(\n    title=\"Mon API\",\n    summary=\"Une brève description de mon API.\",\n    description=\"Une description détaillée de mon API. **Login** est une fonction importante.\",\n    version=\"1.0.0\",\n    terms_of_service=\"https://www.example.com/terms\"\n)\n```\n\nCes métadonnées seront incluses dans la spécification OpenAPI et utilisées par les interfaces de documentation et les outils externes. Certaines interfaces peuvent ne pas afficher toutes les informations supplémentaires déclarées, mais la plupart des fonctionnalités manquantes sont prévues pour être développées.",
+  "refused": false,
+  "sources": [
+   {
+    "score": 0.8777219653129578,
+    "source": "tutorial/query-params-str-validations.md",
+    "section": "Query Parameters and String Validations > Declare more metadata",
+    "text": "You can add more information about the parameter.\n\nThat information will be included in the generated OpenAPI and used by the documentation user interfaces and external tools.\n\nKeep in mind that different tools might have different levels of OpenAPI support.\n\nSome of them might not show all the extra information declared yet, although in most of the cases, the missing feature is already planned for development.\n\nYou can add a `title`:\n\nAnd a `description`:"
+   },
+   {
+    "score": 0.8638205528259277,
+    "source": "tutorial/metadata.md",
+    "section": "Metadata and Docs URLs > Metadata for tags > Create metadata for tags",
+    "text": "Let's try that in an example with tags for `users` and `items`.\n\nCreate metadata for your tags and pass it to the `openapi_tags` parameter:\n\nNotice that you can use Markdown inside of the descriptions, for example \"login\" will be shown in bold (**login**) and \"fancy\" will be shown in italics (_fancy_).\n\nYou don't have to add metadata for all the tags that you use."
+   },
+   {
+    "score": 0.856118381023407,
+    "source": "tutorial/metadata.md",
+    "section": "Metadata and Docs URLs > Metadata for API",
+    "text": "You can set the following fields that are used in the OpenAPI specification and the automatic API docs UIs:\n\n| Parameter | Type | Description |\n|------------|------|-------------|\n| `title` | `str` | The title of the API. |\n| `summary` | `str` | A short summary of the API. <small>Available since OpenAPI 3.1.0, FastAPI 0.99.0.</small> |\n| `description` | `str` | A short description of the API. It can use Markdown. |\n| `version` | `str` | The version of the API. This is the version of your own application, not of OpenAPI. For example `2.5.0`. |\n| `terms_of_service` | `str` | A URL to the Terms of Service for the API. If provided, this has to be a URL. |"
+   },
+   {
+    "score": 0.8548455238342285,
+    "source": "tutorial/metadata.md",
+    "section": "Metadata and Docs URLs > Metadata for API",
+    "text": "You can set them as follows:\n\nYou can write Markdown in the `description` field and it will be rendered in the output.\n\nWith this configuration, the automatic API docs would look like:\n\n<img src=\"/img/tutorial/metadata/image01.png\">"
+   }
+  ],
+  "retrieval_s": 0.014395199999853503,
+  "generation_s": 5.785080999999991,
+  "total_s": 5.7994761999998445,
+  "id": "q33",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/metadata.md"
+  ]
+ },
+ {
+  "question": "Comment convertir un modèle en données compatibles JSON ?",
+  "answer": "Pour convertir un modèle en données compatibles JSON, vous pouvez utiliser la fonction `jsonable_encoder()` fournie par FastAPI [1] et [3]. Cette fonction prend un objet (par exemple, un modèle Pydantic) et retourne une version compatible JSON, telle qu'une `dict` ou une `str`. Par exemple, un objet `datetime` serait converti en une chaîne de caractères au format ISO [4].",
+  "refused": false,
+  "sources": [
+   {
+    "score": 0.8539518117904663,
+    "source": "tutorial/encoder.md",
+    "section": "JSON Compatible Encoder",
+    "text": "There are some cases where you might need to convert a data type (like a Pydantic model) to something compatible with JSON (like a `dict`, `list`, etc).\n\nFor example, if you need to store it in a database.\n\nFor that, **FastAPI** provides a `jsonable_encoder()` function."
+   },
+   {
+    "score": 0.8459282517433167,
+    "source": "tutorial/first-steps.md",
+    "section": "First Steps > Recap, step by step > Step 5: return the content",
+    "text": "You can return a `dict`, `list`, singular values as `str`, `int`, etc.\n\nYou can also return Pydantic models (you'll see more about that later).\n\nThere are many other objects and models that will be automatically converted to JSON (including ORMs, etc). Try using your favorite ones, it's highly probable that they are already supported."
+   },
+   {
+    "score": 0.8432289958000183,
+    "source": "tutorial/testing.md",
+    "section": "Testing > Testing: extended example > Extended testing file",
+    "text": "Note that the `TestClient` receives data that can be converted to JSON, not Pydantic models.\n\nIf you have a Pydantic model in your test and you want to send its data to the application during testing, you can use the `jsonable_encoder` described in [JSON Compatible Encoder](encoder.md)."
+   },
+   {
+    "score": 0.8429766893386841,
+    "source": "tutorial/encoder.md",
+    "section": "JSON Compatible Encoder > Using the `jsonable_encoder`",
+    "text": "Let's imagine that you have a database `fake_db` that only receives JSON compatible data.\n\nFor example, it doesn't receive `datetime` objects, as those are not compatible with JSON.\n\nSo, a `datetime` object would have to be converted to a `str` containing the data in [ISO format](https://en.wikipedia.org/wiki/ISO_8601).\n\nThe same way, this database wouldn't receive a Pydantic model (an object with attributes), only a `dict`.\n\nYou can use `jsonable_encoder` for that.\n\nIt receives an object, like a Pydantic model, and returns a JSON compatible version:\n\nIn this example, it would convert the Pydantic model to a `dict`, and the `datetime` to a `str`.\n\nThe result of calling it is something that can be encoded with the Python standard [`json.dumps()`](https://docs.python.org/3/library/json.html#json.dumps)."
+   }
+  ],
+  "retrieval_s": 0.011795300000812858,
+  "generation_s": 3.4038944999992964,
+  "total_s": 3.4156898000001092,
+  "id": "q34",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/encoder.md"
+  ]
+ },
+ {
+  "question": "Comment ajouter des validations à un champ d'un modèle Pydantic ?",
+  "answer": "Vous pouvez utiliser Pydantic's `Field` pour déclarer des validations supplémentaires et des métadonnées pour les attributs d'un modèle. Par exemple :\n\n```python\nfrom pydantic import Field\n\nclass Item(BaseModel):\n    name: str = Field(..., min_length=1)\n```\n\nIci, `Field(..., min_length=1)` ajoute une validation pour s'assurer que la longueur du champ `name` est au moins de 1 caractère. [1]",
+  "refused": false,
+  "sources": [
+   {
+    "score": 0.8768742084503174,
+    "source": "tutorial/body-fields.md",
+    "section": "Body - Fields > Recap",
+    "text": "You can use Pydantic's `Field` to declare extra validations and metadata for model attributes.\n\nYou can also use the extra keyword arguments to pass additional JSON Schema metadata."
+   },
+   {
+    "score": 0.8730291128158569,
+    "source": "tutorial/body-fields.md",
+    "section": "Body - Fields",
+    "text": "The same way you can declare additional validation and metadata in *path operation function* parameters with `Query`, `Path` and `Body`, you can declare validation and metadata inside of Pydantic models using Pydantic's `Field`."
+   },
+   {
+    "score": 0.868370532989502,
+    "source": "tutorial/path-params.md",
+    "section": "Path Parameters > Pydantic",
+    "text": "All the data validation is performed under the hood by [Pydantic](https://pydantic.dev/docs/), so you get all the benefits from it. And you know you are in good hands.\n\nYou can use the same type declarations with `str`, `float`, `bool` and many other complex data types.\n\nSeveral of these are explored in the next chapters of the tutorial."
+   },
+   {
+    "score": 0.8561718463897705,
+    "source": "tutorial/schema-extra-example.md",
+    "section": "Declare Request Example Data > Extra JSON Schema data in Pydantic models",
+    "text": "You can declare `examples` for a Pydantic model that will be added to the generated JSON Schema.\n\nThat extra info will be added as-is to the output **JSON Schema** for that model, and it will be used in the API docs.\n\nYou can use the attribute `model_config` that takes a `dict` as described in [Pydantic's docs: Configuration](https://pydantic.dev/docs/validation/latest/api/pydantic/config/).\n\nYou can set `\"json_schema_extra\"` with a `dict` containing any additional data you would like to show up in the generated JSON Schema, including `examples`.\n\nYou could use the same technique to extend the JSON Schema and add your own custom extra info.\n\nFor example you could use it to add metadata for a frontend user interface, etc.\n\nOpenAPI 3.1.0 (used since FastAPI 0.99.0) added support for `examples`, which is part of the **JSON Schema** standard."
+   }
+  ],
+  "retrieval_s": 0.013557899999796064,
+  "generation_s": 3.550119800000175,
+  "total_s": 3.563677699999971,
+  "id": "q35",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/body-fields.md"
+  ]
+ },
+ {
+  "question": "Comment utiliser des types comme UUID ou datetime dans les paramètres ?",
+  "answer": "[2] Vous pouvez utiliser des types plus complexes comme `UUID` ou `datetime` de la même manière que les types simples comme `int`, `float`, `str` ou `bool`. Vous continuerez à bénéficier des mêmes fonctionnalités, notamment la conversion de données à partir des requêtes entrantes, la validation des données, etc.",
+  "refused": false,
+  "sources": [
+   {
+    "score": 0.8472682237625122,
+    "source": "tutorial/request-forms.md",
+    "section": "Form Data > Define `Form` parameters",
+    "text": "Create form parameters the same way you would for `Body` or `Query`:\n\nFor example, in one of the ways the OAuth2 specification can be used (called \"password flow\") it is required to send a `username` and `password` as form fields.\n\nThe <dfn title=\"specification\">spec</dfn> requires the fields to be exactly named `username` and `password`, and to be sent as form fields, not JSON.\n\nWith `Form` you can declare the same configurations as with `Body` (and `Query`, `Path`, `Cookie`), including validation, examples, an alias (e.g. `user-name` instead of `username`), etc.\n\n`Form` is a class that inherits directly from `Body`.\n\nTo declare form bodies, you need to use `Form` explicitly, because without it the parameters would be interpreted as query parameters or body (JSON) parameters."
+   },
+   {
+    "score": 0.8431520462036133,
+    "source": "tutorial/extra-data-types.md",
+    "section": "Extra Data Types",
+    "text": "Up to now, you have been using common data types, like:\n\n* `int`\n* `float`\n* `str`\n* `bool`\n\nBut you can also use more complex data types.\n\nAnd you will still have the same features as seen up to now:\n\n* Great editor support.\n* Data conversion from incoming requests.\n* Data conversion for response data.\n* Data validation.\n* Automatic annotation and documentation."
+   },
+   {
+    "score": 0.8401468396186829,
+    "source": "tutorial/query-params.md",
+    "section": "Query Parameters > Required query parameters",
+    "text": "...this would work:\n\n```JSON\n{\n    \"item_id\": \"foo-item\",\n    \"needy\": \"sooooneedy\"\n}\n```\n\nAnd of course, you can define some parameters as required, some as having a default value, and some entirely optional:\n\nIn this case, there are 3 query parameters:\n\n* `needy`, a required `str`.\n* `skip`, an `int` with a default value of `0`.\n* `limit`, an optional `int`.\n\nYou could also use `Enum`s the same way as with [Path Parameters](path-params.md#predefined-values)."
+   },
+   {
+    "score": 0.8400031328201294,
+    "source": "tutorial/query-params.md",
+    "section": "Query Parameters > Required query parameters",
+    "text": "When you declare a default value for non-path parameters (for now, we have only seen query parameters), then it is not required.\n\nIf you don't want to add a specific value but just make it optional, set the default as `None`.\n\nBut when you want to make a query parameter required, you can just not declare any default value:\n\nHere the query parameter `needy` is a required query parameter of type `str`.\n\nIf you open in your browser a URL like:\n\n```\nhttp://127.0.0.1:8000/items/foo-item\n```\n\n...without adding the required parameter `needy`, you will see an error like:\n\n```JSON\n{\n  \"detail\": [\n    {\n      \"type\": \"missing\",\n      \"loc\": [\n        \"query\",\n        \"needy\"\n      ],\n      \"msg\": \"Field required\",\n      \"input\": null\n    }\n  ]\n}\n```\n\nAs `needy` is a required parameter, you would need to set it in the URL:\n\n```\nhttp://127.0.0.1:8000/items/foo-item?needy=sooooneedy\n```\n\n...this would work:\n\n```JSON\n{\n    \"item_id\": \"foo-item\",\n    \"needy\": \"sooooneedy\"\n}\n```"
+   }
+  ],
+  "retrieval_s": 0.012629999999262509,
+  "generation_s": 3.2520610999999917,
+  "total_s": 3.264691099999254,
+  "id": "q36",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/extra-data-types.md"
+  ]
+ },
+ {
+  "question": "Comment éviter de dupliquer des champs entre plusieurs modèles ?",
+  "answer": "Pour éviter de dupliquer des champs entre plusieurs modèles, vous pouvez utiliser l'héritage avec SQLModel. En déclarant un modèle de base et en créant des sous-classes qui héritent de ce modèle de base, vous pouvez éviter la duplication des champs et des types. Par exemple :\n\n```python\nfrom sqlmodel import SQLModel, Field\n\nclass UserBase(SQLModel):\n    name: str\n    email: str\n\nclass User(UserBase, table=True):\n    id: int = Field(primary_key=True)\n    hashed_password: str\n```\n\nIci, `User` hérite de `UserBase` et ajoute un champ supplémentaire `id` et `hashed_password`. Cela permet d'éviter la duplication des champs communs entre les modèles. [3]",
+  "refused": false,
+  "sources": [
+   {
+    "score": 0.8329318761825562,
+    "source": "tutorial/extra-models.md",
+    "section": "Extra Models > Reduce duplication",
+    "text": "Reducing code duplication is one of the core ideas in **FastAPI**.\n\nAs code duplication increases the chances of bugs, security issues, code desynchronization issues (when you update in one place but not in the others), etc.\n\nAnd these models are all sharing a lot of the data and duplicating attribute names and types.\n\nWe could do better.\n\nWe can declare a `UserBase` model that serves as a base for our other models. And then we can make subclasses of that model that inherit its attributes (type declarations, validation, etc).\n\nAll the data conversion, validation, documentation, etc. will still work as normally.\n\nThat way, we can declare just the differences between the models (with plaintext `password`, with `hashed_password` and without password):"
+   },
+   {
+    "score": 0.8239740133285522,
+    "source": "tutorial/path-params-numeric-validations.md",
+    "section": "Path Parameters and Numeric Validations > Recap",
+    "text": "These functions are there (instead of just using the classes directly) so that your editor doesn't mark errors about their types.\n\nThat way you can use your normal editor and coding tools without having to add custom configurations to disregard those errors."
+   },
+   {
+    "score": 0.8231624364852905,
+    "source": "tutorial/sql-databases.md",
+    "section": "SQL (Relational) Databases > Update the App with Multiple Models > Create Multiple Models",
+    "text": "In **SQLModel**, any model class that has `table=True` is a **table model**.\n\nAnd any model class that doesn't have `table=True` is a **data model**, these ones are actually just Pydantic models (with a couple of small extra features). 🤓\n\nWith SQLModel, we can use **inheritance** to **avoid duplicating** all the fields in all the cases."
+   },
+   {
+    "score": 0.8217943906784058,
+    "source": "tutorial/schema-extra-example.md",
+    "section": "Declare Request Example Data > `examples` in JSON Schema - OpenAPI > `Body` with multiple `examples`",
+    "text": "You can of course also pass multiple `examples`:\n\nWhen you do this, the examples will be part of the internal **JSON Schema** for that body data.\n\nNevertheless, at the <dfn title=\"2023-08-26\">time of writing this</dfn>, Swagger UI, the tool in charge of showing the docs UI, doesn't support showing multiple examples for the data in **JSON Schema**. But read below for a workaround."
+   }
+  ],
+  "retrieval_s": 0.01387569999860716,
+  "generation_s": 4.241754000000583,
+  "total_s": 4.25562969999919,
+  "id": "q37",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/extra-models.md"
+  ]
+ },
+ {
+  "question": "Comment envoyer des événements en continu au client ?",
+  "answer": "Vous pouvez envoyer des événements en continu au client en utilisant Server-Sent Events (SSE) [1]. Pour cela, vous pouvezyield des objets `ServerSentEvent` au lieu de données simples [2]. FastAPI gère certaines pratiques recommandées pour SSE, comme l'envoi d'un \"keep alive\" `ping` tous les 15 secondes [4].",
+  "refused": false,
+  "sources": [
+   {
+    "score": 0.8133662939071655,
+    "source": "tutorial/server-sent-events.md",
+    "section": "Server-Sent Events (SSE)",
+    "text": "You can stream data to the client using **Server-Sent Events** (SSE).\n\nThis is similar to [Stream JSON Lines](stream-json-lines.md), but uses the `text/event-stream` format, which is supported natively by browsers with the [`EventSource` API](https://developer.mozilla.org/en-US/docs/Web/API/EventSource).\n\nAdded in FastAPI 0.135.0."
+   },
+   {
+    "score": 0.806182861328125,
+    "source": "tutorial/server-sent-events.md",
+    "section": "Server-Sent Events (SSE) > `ServerSentEvent`",
+    "text": "If you need to set SSE fields like `event`, `id`, `retry`, or `comment`, you can yield `ServerSentEvent` objects instead of plain data.\n\nImport `ServerSentEvent` from `fastapi.sse`:\n\nThe `data` field is always encoded as JSON. You can pass any value that can be serialized as JSON, including Pydantic models."
+   },
+   {
+    "score": 0.8022773265838623,
+    "source": "tutorial/server-sent-events.md",
+    "section": "Server-Sent Events (SSE) > Resuming with `Last-Event-ID`",
+    "text": "When a browser reconnects after a connection drop, it sends the last received `id` in the `Last-Event-ID` header.\n\nYou can read it as a header parameter and use it to resume the stream from where the client left off:"
+   },
+   {
+    "score": 0.8001686930656433,
+    "source": "tutorial/server-sent-events.md",
+    "section": "Server-Sent Events (SSE) > Technical Details",
+    "text": "FastAPI implements some SSE best practices out of the box.\n\n* Send a **\"keep alive\" `ping` comment** every 15 seconds when there hasn't been any message, to prevent some proxies from closing the connection, as suggested in the [HTML specification: Server-Sent Events](https://html.spec.whatwg.org/multipage/server-sent-events.html#authoring-notes).\n* Set the `Cache-Control: no-cache` header to **prevent caching** of the stream.\n* Set a special header `X-Accel-Buffering: no` to **prevent buffering** in some proxies like Nginx.\n\nYou don't have to do anything about it, it works out of the box. 🤓"
+   }
+  ],
+  "retrieval_s": 0.012064999998983694,
+  "generation_s": 3.249500600000829,
+  "total_s": 3.2615655999998125,
+  "id": "q38",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/server-sent-events.md"
+  ]
+ },
+ {
+  "question": "Comment diffuser des données en JSON Lines ?",
+  "answer": "Pour diffuser des données en JSON Lines avec FastAPI, vous pouvez :\n\n1. Utiliser JSON Lines pour envoyer une séquence de données sous forme de flux [1].\n2. Omettre le type de retour, et FastAPI utilisera `jsonable_encoder` pour convertir les données en JSON avant de les envoyer en JSON Lines [3].\n3. Utiliser ce format pour diffuser des données d'AI LLM, des logs, de la telemetry, ou d'autres types de données structurées en items JSON [4].\n\nSi vous souhaitez diffuser des données binaires comme des vidéos ou des audio, consultez le guide avancé sur la diffusion de données [4].",
+  "refused": false,
+  "sources": [
+   {
+    "score": 0.8469809293746948,
+    "source": "tutorial/stream-json-lines.md",
+    "section": "Stream JSON Lines",
+    "text": "You could have a sequence of data that you would like to send in a \"**stream**\", you could do it with **JSON Lines**.\n\nAdded in FastAPI 0.134.0."
+   },
+   {
+    "score": 0.8392717838287354,
+    "source": "tutorial/server-sent-events.md",
+    "section": "Server-Sent Events (SSE)",
+    "text": "You can stream data to the client using **Server-Sent Events** (SSE).\n\nThis is similar to [Stream JSON Lines](stream-json-lines.md), but uses the `text/event-stream` format, which is supported natively by browsers with the [`EventSource` API](https://developer.mozilla.org/en-US/docs/Web/API/EventSource).\n\nAdded in FastAPI 0.135.0."
+   },
+   {
+    "score": 0.8375260829925537,
+    "source": "tutorial/stream-json-lines.md",
+    "section": "Stream JSON Lines > Stream JSON Lines with FastAPI > No Return Type",
+    "text": "You can also omit the return type. FastAPI will then use the [`jsonable_encoder`](./encoder.md) to convert the data to something that can be serialized to JSON and then send it as JSON Lines."
+   },
+   {
+    "score": 0.8365607857704163,
+    "source": "tutorial/stream-json-lines.md",
+    "section": "Stream JSON Lines > Use Cases",
+    "text": "You could use this to stream data from an **AI LLM** service, from **logs** or **telemetry**, or from other types of data that can be structured in **JSON** items.\n\nIf you want to stream binary data, for example video or audio, check the advanced guide: [Stream Data](../advanced/stream-data.md)."
+   }
+  ],
+  "retrieval_s": 0.013893800000005285,
+  "generation_s": 3.897661800001515,
+  "total_s": 3.9115556000015204,
+  "id": "q39",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/stream-json-lines.md"
+  ]
+ },
+ {
+  "question": "Comment ajouter des tags à une opération pour la documentation ?",
+  "answer": "Vous pouvez ajouter des tags à une opération en passant le paramètre `tags` avec une liste de `str` à votre *path operation*. Ces tags seront ajoutés au schéma OpenAPI et utilisés par les interfaces de documentation automatiques [1].\n\nPour fournir des métadonnées supplémentaires pour ces tags, vous pouvez utiliser le paramètre `openapi_tags` qui prend une liste de dictionnaires, chacun contenant des informations comme `name`, `description` et `externalDocs` [2] [3].",
+  "refused": false,
+  "sources": [
+   {
+    "score": 0.8623627424240112,
+    "source": "tutorial/path-operation-configuration.md",
+    "section": "Path Operation Configuration > Tags",
+    "text": "You can add tags to your *path operation*, pass the parameter `tags` with a `list` of `str` (commonly just one `str`):\n\nThey will be added to the OpenAPI schema and used by the automatic documentation interfaces:\n\n<img src=\"/img/tutorial/path-operation-configuration/image01.png\">"
+   },
+   {
+    "score": 0.8569369316101074,
+    "source": "tutorial/metadata.md",
+    "section": "Metadata and Docs URLs > Metadata for tags",
+    "text": "You can also add additional metadata for the different tags used to group your path operations with the parameter `openapi_tags`.\n\nIt takes a list containing one dictionary for each tag.\n\nEach dictionary can contain:\n\n* `name` (**required**): a `str` with the same tag name you use in the `tags` parameter in your *path operations* and `APIRouter`s.\n* `description`: a `str` with a short description for the tag. It can have Markdown and will be shown in the docs UI.\n* `externalDocs`: a `dict` describing external documentation with:\n    * `description`: a `str` with a short description for the external docs.\n    * `url` (**required**): a `str` with the URL for the external documentation."
+   },
+   {
+    "score": 0.8508372902870178,
+    "source": "tutorial/metadata.md",
+    "section": "Metadata and Docs URLs > Metadata for tags > Create metadata for tags",
+    "text": "Let's try that in an example with tags for `users` and `items`.\n\nCreate metadata for your tags and pass it to the `openapi_tags` parameter:\n\nNotice that you can use Markdown inside of the descriptions, for example \"login\" will be shown in bold (**login**) and \"fancy\" will be shown in italics (_fancy_).\n\nYou don't have to add metadata for all the tags that you use."
+   },
+   {
+    "score": 0.849040150642395,
+    "source": "tutorial/metadata.md",
+    "section": "Metadata and Docs URLs > Metadata for tags > Use your tags",
+    "text": "Use the `tags` parameter with your *path operations* (and `APIRouter`s) to assign them to different tags:\n\nRead more about tags in [Path Operation Configuration](path-operation-configuration.md#tags)."
+   }
+  ],
+  "retrieval_s": 0.012673799999902258,
+  "generation_s": 3.6054083999988507,
+  "total_s": 3.618082199998753,
+  "id": "q40",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/path-operation-configuration.md"
+  ]
+ },
+ {
+  "question": "Comment déclarer les en-têtes attendus avec un modèle Pydantic ?",
+  "answer": "Je ne trouve pas la réponse dans la documentation fournie.",
+  "refused": true,
+  "sources": [
+   {
+    "score": 0.8436076045036316,
+    "source": "tutorial/request-form-models.md",
+    "section": "Form Models > Pydantic Models for Forms",
+    "text": "You just need to declare a **Pydantic model** with the fields you want to receive as **form fields**, and then declare the parameter as `Form`:\n\n**FastAPI** will **extract** the data for **each field** from the **form data** in the request and give you the Pydantic model you defined."
+   },
+   {
+    "score": 0.8428314328193665,
+    "source": "tutorial/body-fields.md",
+    "section": "Body - Fields > Recap",
+    "text": "You can use Pydantic's `Field` to declare extra validations and metadata for model attributes.\n\nYou can also use the extra keyword arguments to pass additional JSON Schema metadata."
+   },
+   {
+    "score": 0.842522382736206,
+    "source": "tutorial/body-updates.md",
+    "section": "Body - Updates > Partial updates with `PATCH` > Using Pydantic's `update` parameter",
+    "text": "Now, you can create a copy of the existing model using `.model_copy()`, and pass the `update` parameter with a `dict` containing the data to update.\n\nLike `stored_item_model.model_copy(update=update_data)`:"
+   },
+   {
+    "score": 0.8403724431991577,
+    "source": "tutorial/response-model.md",
+    "section": "Response Model - Return Type > Other Return Type Annotations",
+    "text": "There might be cases where you return something that is not a valid Pydantic field and you annotate it in the function, only to get the support provided by tooling (the editor, mypy, etc)."
+   }
+  ],
+  "retrieval_s": 0.01213860000098066,
+  "generation_s": 2.4210915000003297,
+  "total_s": 2.4332301000013103,
+  "id": "q41",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/header-param-models.md"
+  ]
+ },
+ {
+  "question": "Comment déclarer les cookies attendus avec un modèle Pydantic ?",
+  "answer": "Pour déclarer les cookies attendus avec un modèle Pydantic, vous devez :\n\n1. Déclarer les **cookie** parameters nécessaires dans un **Pydantic model**.\n2. Déclarer le paramètre en utilisant `Cookie`.\n\nFastAPI extraira les données pour chaque champ du modèle à partir des cookies reçus dans la requête et vous fournira le modèle Pydantic que vous avez défini [1].",
+  "refused": false,
+  "sources": [
+   {
+    "score": 0.8716948628425598,
+    "source": "tutorial/cookie-param-models.md",
+    "section": "Cookie Parameter Models > Cookies with a Pydantic Model",
+    "text": "Declare the **cookie** parameters that you need in a **Pydantic model**, and then declare the parameter as `Cookie`:\n\n**FastAPI** will **extract** the data for **each field** from the **cookies** received in the request and give you the Pydantic model you defined."
+   },
+   {
+    "score": 0.8467773199081421,
+    "source": "tutorial/cookie-param-models.md",
+    "section": "Cookie Parameter Models",
+    "text": "If you have a group of **cookies** that are related, you can create a **Pydantic model** to declare them. 🍪\n\nThis would allow you to **re-use the model** in **multiple places** and also to declare validations and metadata for all the parameters at once. 😎\n\nThis is supported since FastAPI version `0.115.0`. 🤓\n\nThis same technique applies to `Query`, `Cookie`, and `Header`. 😎"
+   },
+   {
+    "score": 0.845610499382019,
+    "source": "tutorial/cookie-param-models.md",
+    "section": "Cookie Parameter Models > Forbid Extra Cookies",
+    "text": "In some special use cases (probably not very common), you might want to **restrict** the cookies that you want to receive.\n\nYour API now has the power to control its own <dfn title=\"This is a joke, just in case. It has nothing to do with cookie consents, but it's funny that even the API can now reject the poor cookies. Have a cookie. 🍪\">cookie consent</dfn>. 🤪🍪\n\nYou can use Pydantic's model configuration to `forbid` any `extra` fields:\n\nIf a client tries to send some **extra cookies**, they will receive an **error** response.\n\nPoor cookie banners with all their effort to get your consent for the <dfn title=\"This is another joke. Don't pay attention to me. Have some coffee for your cookie. ☕\">API to reject it</dfn>. 🍪"
+   },
+   {
+    "score": 0.8434698581695557,
+    "source": "tutorial/cookie-param-models.md",
+    "section": "Cookie Parameter Models > Summary",
+    "text": "You can use **Pydantic models** to declare <dfn title=\"Have a last cookie before you go. 🍪\">**cookies**</dfn> in **FastAPI**. 😎"
+   }
+  ],
+  "retrieval_s": 0.012070300001141732,
+  "generation_s": 3.2952861999983725,
+  "total_s": 3.307356499999514,
+  "id": "q42",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/cookie-param-models.md"
+  ]
+ },
+ {
+  "question": "Comment recevoir un formulaire à l'aide d'un modèle Pydantic ?",
+  "answer": "Vous devez déclarer un modèle Pydantic avec les champs que vous souhaitez recevoir comme champs de formulaire, puis déclarer le paramètre comme `Form` :\n\n```python\n@router.post(\"/example\")\nasync def example_form_param(form_data: MyPydanticModel = Form()):\n    return form_data\n```\n\nFastAPI extraîtra les données pour chaque champ à partir des données de formulaire dans la requête et vous donnera le modèle Pydantic que vous avez défini. [1]",
+  "refused": false,
+  "sources": [
+   {
+    "score": 0.8784350156784058,
+    "source": "tutorial/request-form-models.md",
+    "section": "Form Models > Pydantic Models for Forms",
+    "text": "You just need to declare a **Pydantic model** with the fields you want to receive as **form fields**, and then declare the parameter as `Form`:\n\n**FastAPI** will **extract** the data for **each field** from the **form data** in the request and give you the Pydantic model you defined."
+   },
+   {
+    "score": 0.8578542470932007,
+    "source": "tutorial/query-param-models.md",
+    "section": "Query Parameter Models > Query Parameters with a Pydantic Model",
+    "text": "Declare the **query parameters** that you need in a **Pydantic model**, and then declare the parameter as `Query`:\n\n**FastAPI** will **extract** the data for **each field** from the **query parameters** in the request and give you the Pydantic model you defined."
+   },
+   {
+    "score": 0.8574570417404175,
+    "source": "tutorial/body.md",
+    "section": "Request Body > Import Pydantic's `BaseModel`",
+    "text": "First, you need to import `BaseModel` from `pydantic`:"
+   },
+   {
+    "score": 0.8545587062835693,
+    "source": "tutorial/first-steps.md",
+    "section": "First Steps > Recap, step by step > Step 5: return the content",
+    "text": "You can return a `dict`, `list`, singular values as `str`, `int`, etc.\n\nYou can also return Pydantic models (you'll see more about that later).\n\nThere are many other objects and models that will be automatically converted to JSON (including ORMs, etc). Try using your favorite ones, it's highly probable that they are already supported."
+   }
+  ],
+  "retrieval_s": 0.014519099999233731,
+  "generation_s": 3.4541833000002953,
+  "total_s": 3.468702399999529,
+  "id": "q43",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/request-form-models.md"
+  ]
+ },
+ {
+  "question": "Comment déclarer plusieurs paramètres de corps dans une même route ?",
+  "answer": "Pour déclarer plusieurs paramètres de corps dans une même route, vous pouvez les déclarer comme des paramètres de fonction distincts. FastAPI reconnaîtra que les paramètres qui correspondent aux paramètres de chemin proviennent du chemin, tandis que les paramètres qui sont des modèles Pydantic proviennent du corps de la requête.\n\nPar exemple :\n\n```python\nfrom fastapi import FastAPI\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\nclass Item(BaseModel):\n    name: str\n    description: str | None = None\n    price: float\n    tax: float | None = None\n\n@app.post(\"/items/\")\nasync def create_item(item: Item, q: str | None = None):\n    return {\"item\": item, \"q\": q}\n```\n\nIci, `item` est un paramètre de corps et `q` est un paramètre de requête. [2] [3]",
+  "refused": false,
+  "sources": [
+   {
+    "score": 0.8401669859886169,
+    "source": "tutorial/body-multiple-params.md",
+    "section": "Body - Multiple Parameters",
+    "text": "Now that we have seen how to use `Path` and `Query`, let's see more advanced uses of request body declarations."
+   },
+   {
+    "score": 0.8371720314025879,
+    "source": "tutorial/body-multiple-params.md",
+    "section": "Body - Multiple Parameters > Multiple body params and query",
+    "text": "Of course, you can also declare additional query parameters whenever you need, additional to any body parameters.\n\nAs, by default, singular values are interpreted as query parameters, you don't have to explicitly add a `Query`, you can just do:\n\n```Python\nq: str | None = None\n```\n\nFor example:\n\n`Body` also has all the same extra validation and metadata parameters as `Query`, `Path` and others you will see later."
+   },
+   {
+    "score": 0.8339725732803345,
+    "source": "tutorial/body-multiple-params.md",
+    "section": "Body - Multiple Parameters > Mix `Path`, `Query` and body parameters",
+    "text": "First, of course, you can mix `Path`, `Query` and request body parameter declarations freely and **FastAPI** will know what to do.\n\nAnd you can also declare body parameters as optional, by setting the default to `None`:\n\nNotice that, in this case, the `item` that would be taken from the body is optional. As it has a `None` default value."
+   },
+   {
+    "score": 0.8306832313537598,
+    "source": "tutorial/body.md",
+    "section": "Request Body > Request body + path parameters",
+    "text": "You can declare path parameters and request body at the same time.\n\n**FastAPI** will recognize that the function parameters that match path parameters should be **taken from the path**, and that function parameters that are declared to be Pydantic models should be **taken from the request body**."
+   }
+  ],
+  "retrieval_s": 0.013058200000159559,
+  "generation_s": 4.454978199999459,
+  "total_s": 4.468036399999619,
+  "id": "q44",
+  "type": "in_corpus",
+  "gold": [
+   "tutorial/body-multiple-params.md"
+  ]
+ },
+ {
+  "question": "Quelle est la recette de la tarte aux pommes ?",
+  "answer": "Je ne trouve pas la réponse dans la documentation fournie.",
+  "refused": true,
+  "sources": [
+   {
+    "score": 0.7511847019195557,
+    "source": "tutorial/first-steps.md",
+    "section": "First Steps > Recap, step by step > Step 3: create a *path operation* > Define a *path operation decorator*",
+    "text": "The `@app.get(\"/\")` tells **FastAPI** that the function right below is in charge of handling requests that go to:\n\n* the path `/`\n* using a <dfn title=\"an HTTP GET method\"><code>get</code> operation</dfn>\n\nThat `@something` syntax in Python is called a \"decorator\".\n\nYou put it on top of a function. Like a pretty decorative hat (I guess that's where the term came from).\n\nA \"decorator\" takes the function below and does something with it.\n\nIn our case, this decorator tells **FastAPI** that the function below corresponds to the **path** `/` with an **operation** `get`.\n\nIt is the \"**path operation decorator**\".\n\nYou can also use the other operations:\n\n* `@app.post()`\n* `@app.put()`\n* `@app.delete()`\n\nAnd the more exotic ones:\n\n* `@app.options()`\n* `@app.head()`\n* `@app.patch()`\n* `@app.trace()`\n\nYou are free to use each operation (HTTP method) as you wish.\n\n**FastAPI** doesn't enforce any specific meaning.\n\nThe information here is presented as a guideline, not a requirement."
+   },
+   {
+    "score": 0.7506450414657593,
+    "source": "tutorial/first-steps.md",
+    "section": "First Steps",
+    "text": "      <span style=\"background-color:#007166\"><font color=\"#D3D7CF\"> app </font></span>  Using import string: <font color=\"#3465A4\">main:app</font>\n\n   <span style=\"background-color:#007166\"><font color=\"#D3D7CF\"> server </font></span>  Server started at <font color=\"#729FCF\"><u style=\"text-decoration-style:solid\">http://127.0.0.1:8000</u></font>\n   <span style=\"background-color:#007166\"><font color=\"#D3D7CF\"> server </font></span>  Documentation at <font color=\"#729FCF\"><u style=\"text-decoration-style:solid\">http://127.0.0.1:8000/docs</u></font>\n\n      <span style=\"background-color:#007166\"><font color=\"#D3D7CF\"> tip </font></span>  Running in development mode, for production use:\n             <b>fastapi run</b>\n\n             Logs:\n\n     <span style=\"background-color:#007166\"><font color=\"#D3D7CF\"> INFO </font></span>  Will watch for changes in these directories:\n             <b>[</b><font color=\"#4E9A06\">&apos;/home/user/code/awesomeapp&apos;</font><b>]</b>"
+   },
+   {
+    "score": 0.7487899661064148,
+    "source": "tutorial/index.md",
+    "section": "Tutorial - User Guide > Run the code",
+    "text": "      <span style=\"background-color:#007166\"><font color=\"#D3D7CF\"> app </font></span>  Using import string: <font color=\"#3465A4\">main:app</font>\n\n   <span style=\"background-color:#007166\"><font color=\"#D3D7CF\"> server </font></span>  Server started at <font color=\"#729FCF\"><u style=\"text-decoration-style:solid\">http://127.0.0.1:8000</u></font>\n   <span style=\"background-color:#007166\"><font color=\"#D3D7CF\"> server </font></span>  Documentation at <font color=\"#729FCF\"><u style=\"text-decoration-style:solid\">http://127.0.0.1:8000/docs</u></font>\n\n      <span style=\"background-color:#007166\"><font color=\"#D3D7CF\"> tip </font></span>  Running in development mode, for production use:\n             <b>fastapi run</b>\n\n             Logs:\n\n     <span style=\"background-color:#007166\"><font color=\"#D3D7CF\"> INFO </font></span>  Will watch for changes in these directories:\n             <b>[</b><font color=\"#4E9A06\">&apos;/home/user/code/awesomeapp&apos;</font><b>]</b>"
+   },
+   {
+    "score": 0.7479058504104614,
+    "source": "tutorial/testing.md",
+    "section": "Testing > Run it",
+    "text": "After that, you just need to install `pytest`.\n\nAdd it to your project:\n\n<div class=\"termy\">\n\n```console\n$ uv add pytest\n\n---> 100%\n```\n\n</div>\n\nIt will detect the files and tests automatically, execute them, and report the results back to you.\n\nRun the tests with:\n\n<div class=\"termy\">\n\n```console\n$ uv run pytest\n\n================ test session starts ================\nplatform linux -- Python 3.6.9, pytest-5.3.5, py-1.8.1, pluggy-0.13.1\nrootdir: /home/user/code/superawesome-cli/app\nplugins: forked-1.1.3, xdist-1.31.0, cov-2.8.1\ncollected 6 items\n\n---> 100%\n\ntest_main.py <span style=\"color: green; white-space: pre;\">......                            [100%]</span>\n\n<span style=\"color: green;\">================= 1 passed in 0.03s =================</span>\n```\n\n</div>"
+   }
+  ],
+  "retrieval_s": 0.012031700000079582,
+  "generation_s": 2.68358679999983,
+  "total_s": 2.6956184999999095,
+  "id": "o01",
+  "type": "off_topic",
+  "gold": []
+ },
+ {
+  "question": "Quelle est la capitale de l'Australie ?",
+  "answer": "Je ne trouve pas la réponse dans la documentation fournie.",
+  "refused": true,
+  "sources": [
+   {
+    "score": 0.7195608019828796,
+    "source": "tutorial/first-steps.md",
+    "section": "First Steps",
+    "text": "      <span style=\"background-color:#007166\"><font color=\"#D3D7CF\"> app </font></span>  Using import string: <font color=\"#3465A4\">main:app</font>\n\n   <span style=\"background-color:#007166\"><font color=\"#D3D7CF\"> server </font></span>  Server started at <font color=\"#729FCF\"><u style=\"text-decoration-style:solid\">http://127.0.0.1:8000</u></font>\n   <span style=\"background-color:#007166\"><font color=\"#D3D7CF\"> server </font></span>  Documentation at <font color=\"#729FCF\"><u style=\"text-decoration-style:solid\">http://127.0.0.1:8000/docs</u></font>\n\n      <span style=\"background-color:#007166\"><font color=\"#D3D7CF\"> tip </font></span>  Running in development mode, for production use:\n             <b>fastapi run</b>\n\n             Logs:\n\n     <span style=\"background-color:#007166\"><font color=\"#D3D7CF\"> INFO </font></span>  Will watch for changes in these directories:\n             <b>[</b><font color=\"#4E9A06\">&apos;/home/user/code/awesomeapp&apos;</font><b>]</b>"
+   },
+   {
+    "score": 0.7175571918487549,
+    "source": "tutorial/header-param-models.md",
+    "section": "Header Parameter Models > Summary",
+    "text": "You can use **Pydantic models** to declare **headers** in **FastAPI**. 😎"
+   },
+   {
+    "score": 0.7170355319976807,
+    "source": "tutorial/metadata.md",
+    "section": "Metadata and Docs URLs",
+    "text": "You can customize several metadata configurations in your **FastAPI** application."
+   },
+   {
+    "score": 0.7152548432350159,
+    "source": "tutorial/request-files.md",
+    "section": "Request Files > File Parameters with `UploadFile` > `UploadFile`",
+    "text": "```Python\ncontents = myfile.file.read()\n```\n\nWhen you use the `async` methods, **FastAPI** runs the file methods in a threadpool and awaits for them.\n\n**FastAPI**'s `UploadFile` inherits directly from **Starlette**'s `UploadFile`, but adds some necessary parts to make it compatible with **Pydantic** and the other parts of FastAPI."
+   }
+  ],
+  "retrieval_s": 0.012057600000844104,
+  "generation_s": 2.4990041999990353,
+  "total_s": 2.5110617999998794,
+  "id": "o02",
+  "type": "off_topic",
+  "gold": []
+ },
+ {
+  "question": "Comment entraîner un réseau de neurones avec PyTorch ?",
+  "answer": "Je ne trouve pas la réponse dans la documentation fournie.",
+  "refused": true,
+  "sources": [
+   {
+    "score": 0.8154151439666748,
+    "source": "tutorial/security/oauth2-jwt.md",
+    "section": "OAuth2 with Password (and hashing), Bearer with JWT tokens > Handle JWT tokens",
+    "text": "Import the modules installed.\n\nCreate a random secret key that will be used to sign the JWT tokens.\n\nTo generate a secure random secret key use the command:\n\n<div class=\"termy\">\n\n```console\n$ openssl rand -hex 32\n\n09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7\n```\n\n</div>\n\nAnd copy the output to the variable `SECRET_KEY` (don't use the one in the example).\n\nCreate a variable `ALGORITHM` with the algorithm used to sign the JWT token and set it to `\"HS256\"`.\n\nCreate a variable for the expiration of the token.\n\nDefine a Pydantic Model that will be used in the token endpoint for the response.\n\nCreate a utility function to generate a new access token."
+   },
+   {
+    "score": 0.8114634156227112,
+    "source": "tutorial/background-tasks.md",
+    "section": "Background Tasks > Recap",
+    "text": "Import and use `BackgroundTasks` with parameters in *path operation functions* and dependencies to add background tasks."
+   },
+   {
+    "score": 0.8113324642181396,
+    "source": "tutorial/bigger-applications.md",
+    "section": "Bigger Applications - Multiple Files > Another module with `APIRouter` > Import the dependencies > How relative imports work",
+    "text": "---\n\nThe two dots `..`, like in:\n\n```Python\nfrom ..dependencies import get_token_header\n```\n\nmean:\n\n* Starting in the same package that this module (the file `app/routers/items.py`) lives in (the directory `app/routers/`)...\n* go to the parent package (the directory `app/`)...\n* and in there, find the module `dependencies` (the file at `app/dependencies.py`)...\n* and from it, import the function `get_token_header`.\n\nThat works correctly! 🎉\n\n---\n\nThe same way, if we had used three dots `...`, like in:\n\n```Python\nfrom ...dependencies import get_token_header\n```\n\nthat would mean:\n\n* Starting in the same package that this module (the file `app/routers/items.py`) lives in (the directory `app/routers/`)...\n* go to the parent package (the directory `app/`)...\n* then go to the parent of that package (there's no parent package, `app` is the top level 😱)...\n* and in there, find the module `dependencies` (the file at `app/dependencies.py`)...\n* and from it, import the function `get_token_header`."
+   },
+   {
+    "score": 0.8098356127738953,
+    "source": "tutorial/path-params.md",
+    "section": "Path Parameters > Predefined values > Create an `Enum` class",
+    "text": "Import `Enum` and create a sub-class that inherits from `str` and from `Enum`.\n\nBy inheriting from `str` the API docs will be able to know that the values must be of type `string` and will be able to render correctly.\n\nThen create class attributes with fixed values, which will be the available valid values:\n\nIf you are wondering, \"AlexNet\", \"ResNet\", and \"LeNet\" are just names of Machine Learning <dfn title=\"Technically, Deep Learning model architectures\">models</dfn>."
+   }
+  ],
+  "retrieval_s": 0.01260280000133207,
+  "generation_s": 2.5622093999991193,
+  "total_s": 2.5748122000004514,
+  "id": "o03",
+  "type": "off_topic",
+  "gold": []
+ },
+ {
+  "question": "Quel temps fait-il à Paris demain ?",
+  "answer": "Je ne trouve pas la réponse dans la documentation fournie.",
+  "refused": true,
+  "sources": [
+   {
+    "score": 0.7361232042312622,
+    "source": "tutorial/extra-data-types.md",
+    "section": "Extra Data Types > Other data types",
+    "text": "* `UUID`:\n    * A standard \"Universally Unique Identifier\", common as an ID in many databases and systems.\n    * In requests and responses will be represented as a `str`.\n* `datetime.datetime`:\n    * A Python `datetime.datetime`.\n    * In requests and responses will be represented as a `str` in ISO 8601 format, like: `2008-09-15T15:53:00+05:00`.\n* `datetime.date`:\n    * Python `datetime.date`.\n    * In requests and responses will be represented as a `str` in ISO 8601 format, like: `2008-09-15`.\n* `datetime.time`:\n    * A Python `datetime.time`.\n    * In requests and responses will be represented as a `str` in ISO 8601 format, like: `14:23:55.003`.\n* `datetime.timedelta`:\n    * A Python `datetime.timedelta`.\n    * In requests and responses will be represented as a `float` of total seconds.\n    * Pydantic also allows representing it as an \"ISO 8601 time diff encoding\", [see the docs for more info](https://pydantic.dev/docs/validation/latest/concepts/serialization/#custom-serializers)."
+   },
+   {
+    "score": 0.7249779105186462,
+    "source": "tutorial/middleware.md",
+    "section": "Middleware > Create a middleware > Before and after the `response`",
+    "text": "You can add code to be run with the `request`,  before any *path operation* receives it.\n\nAnd also after the `response` is generated, before returning it.\n\nFor example, you could add a custom header `X-Process-Time` containing the time in seconds that it took to process the request and generate a response:\n\nHere we use [`time.perf_counter()`](https://docs.python.org/3/library/time.html#time.perf_counter) instead of `time.time()` because it can be more precise for these use cases. 🤓"
+   },
+   {
+    "score": 0.724367618560791,
+    "source": "tutorial/background-tasks.md",
+    "section": "Background Tasks > Recap",
+    "text": "Import and use `BackgroundTasks` with parameters in *path operation functions* and dependencies to add background tasks."
+   },
+   {
+    "score": 0.7240995764732361,
+    "source": "tutorial/path-params.md",
+    "section": "Path Parameters > Data validation",
+    "text": "But if you go to the browser at [http://127.0.0.1:8000/items/foo](http://127.0.0.1:8000/items/foo), you will see a nice HTTP error of:\n\n```JSON\n{\n  \"detail\": [\n    {\n      \"type\": \"int_parsing\",\n      \"loc\": [\n        \"path\",\n        \"item_id\"\n      ],\n      \"msg\": \"Input should be a valid integer, unable to parse string as an integer\",\n      \"input\": \"foo\"\n    }\n  ]\n}\n```\n\nbecause the path parameter `item_id` had a value of `\"foo\"`, which is not an `int`.\n\nThe same error would appear if you provided a `float` instead of an `int`, as in: [http://127.0.0.1:8000/items/4.2](http://127.0.0.1:8000/items/4.2)\n\nSo, with the same Python type declaration, **FastAPI** gives you data validation.\n\nNotice that the error also clearly states exactly the point where the validation didn't pass.\n\nThis is incredibly helpful while developing and debugging code that interacts with your API."
+   }
+  ],
+  "retrieval_s": 0.010380300000178977,
+  "generation_s": 2.592421100000138,
+  "total_s": 2.602801400000317,
+  "id": "o04",
+  "type": "off_topic",
+  "gold": []
+ },
+ {
+  "question": "Comment fonctionne le chiffrement RSA ?",
+  "answer": "Je ne trouve pas la réponse dans la documentation fournie.",
+  "refused": true,
+  "sources": [
+   {
+    "score": 0.7965062260627747,
+    "source": "tutorial/security/first-steps.md",
+    "section": "Security - First Steps > Check it",
+    "text": "Go to the interactive docs at: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).\n\nYou will see something like this:\n\n<img src=\"/img/tutorial/security/image01.png\">\n\nYou already have a shiny new \"Authorize\" button.\n\nAnd your *path operation* has a little lock in the top-right corner that you can click.\n\nAnd if you click it, you have a little authorization form to type a `username` and `password` (and other optional fields):\n\n<img src=\"/img/tutorial/security/image02.png\">\n\nIt doesn't matter what you type in the form, it won't work yet. But we'll get there.\n\nThis is of course not the frontend for the final users, but it's a great automatic tool to document interactively all your API.\n\nIt can be used by the frontend team (that can also be yourself).\n\nIt can be used by third party applications and systems.\n\nAnd it can also be used by yourself, to debug, check and test the same application."
+   },
+   {
+    "score": 0.7904419898986816,
+    "source": "tutorial/security/simple-oauth2.md",
+    "section": "Simple OAuth2 with Password and Bearer > Code to get the `username` and `password` > Check the password > Password hashing",
+    "text": "\"Hashing\" means: converting some content (a password in this case) into a sequence of bytes (just a string) that looks like gibberish.\n\nWhenever you pass exactly the same content (exactly the same password) you get exactly the same gibberish.\n\nBut you cannot convert from the gibberish back to the password."
+   },
+   {
+    "score": 0.7872086763381958,
+    "source": "tutorial/security/oauth2-jwt.md",
+    "section": "OAuth2 with Password (and hashing), Bearer with JWT tokens > Install `PyJWT`",
+    "text": "We need to install `PyJWT` to generate and verify the JWT tokens in Python.\n\nAdd `pyjwt` to your project:\n\n<div class=\"termy\">\n\n```console\n$ uv add pyjwt\n\n---> 100%\n```\n\n</div>\n\nIf you are planning to use digital signature algorithms like RSA or ECDSA, you should install the cryptography library dependency `pyjwt[crypto]`.\n\nYou can read more about it in the [PyJWT Installation docs](https://pyjwt.readthedocs.io/en/latest/installation.html)."
+   },
+   {
+    "score": 0.7867755889892578,
+    "source": "tutorial/security/oauth2-jwt.md",
+    "section": "OAuth2 with Password (and hashing), Bearer with JWT tokens > Handle JWT tokens",
+    "text": "Import the modules installed.\n\nCreate a random secret key that will be used to sign the JWT tokens.\n\nTo generate a secure random secret key use the command:\n\n<div class=\"termy\">\n\n```console\n$ openssl rand -hex 32\n\n09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7\n```\n\n</div>\n\nAnd copy the output to the variable `SECRET_KEY` (don't use the one in the example).\n\nCreate a variable `ALGORITHM` with the algorithm used to sign the JWT token and set it to `\"HS256\"`.\n\nCreate a variable for the expiration of the token.\n\nDefine a Pydantic Model that will be used in the token endpoint for the response.\n\nCreate a utility function to generate a new access token."
+   }
+  ],
+  "retrieval_s": 0.01152890000048501,
+  "generation_s": 2.6117486000002827,
+  "total_s": 2.6232775000007678,
+  "id": "o05",
+  "type": "off_topic",
+  "gold": []
+ },
+ {
+  "question": "Qui a gagné la Coupe du monde de football en 2018 ?",
+  "answer": "Je ne trouve pas la réponse dans la documentation fournie.",
+  "refused": true,
+  "sources": [
+   {
+    "score": 0.7183408737182617,
+    "source": "tutorial/first-steps.md",
+    "section": "First Steps > Check it",
+    "text": "Open your browser at [http://127.0.0.1:8000](http://127.0.0.1:8000).\n\nYou will see the JSON response as:\n\n```JSON\n{\"message\": \"Hello World\"}\n```"
+   },
+   {
+    "score": 0.7028940916061401,
+    "source": "tutorial/path-params.md",
+    "section": "Path Parameters > Data <dfn title=\"also known as: serialization, parsing, marshalling\">conversion</dfn>",
+    "text": "If you run this example and open your browser at [http://127.0.0.1:8000/items/3](http://127.0.0.1:8000/items/3), you will see a response of:\n\n```JSON\n{\"item_id\":3}\n```\n\nNotice that the value your function received (and returned) is `3`, as a Python `int`, not a string `\"3\"`.\n\nSo, with that type declaration, **FastAPI** gives you automatic request <dfn title=\"converting the string that comes from an HTTP request into Python data\">\"parsing\"</dfn>."
+   },
+   {
+    "score": 0.7008987665176392,
+    "source": "tutorial/first-steps.md",
+    "section": "First Steps",
+    "text": "      <span style=\"background-color:#007166\"><font color=\"#D3D7CF\"> app </font></span>  Using import string: <font color=\"#3465A4\">main:app</font>\n\n   <span style=\"background-color:#007166\"><font color=\"#D3D7CF\"> server </font></span>  Server started at <font color=\"#729FCF\"><u style=\"text-decoration-style:solid\">http://127.0.0.1:8000</u></font>\n   <span style=\"background-color:#007166\"><font color=\"#D3D7CF\"> server </font></span>  Documentation at <font color=\"#729FCF\"><u style=\"text-decoration-style:solid\">http://127.0.0.1:8000/docs</u></font>\n\n      <span style=\"background-color:#007166\"><font color=\"#D3D7CF\"> tip </font></span>  Running in development mode, for production use:\n             <b>fastapi run</b>\n\n             Logs:\n\n     <span style=\"background-color:#007166\"><font color=\"#D3D7CF\"> INFO </font></span>  Will watch for changes in these directories:\n             <b>[</b><font color=\"#4E9A06\">&apos;/home/user/code/awesomeapp&apos;</font><b>]</b>"
+   },
+   {
+    "score": 0.700206995010376,
+    "source": "tutorial/index.md",
+    "section": "Tutorial - User Guide > Run the code",
+    "text": "      <span style=\"background-color:#007166\"><font color=\"#D3D7CF\"> app </font></span>  Using import string: <font color=\"#3465A4\">main:app</font>\n\n   <span style=\"background-color:#007166\"><font color=\"#D3D7CF\"> server </font></span>  Server started at <font color=\"#729FCF\"><u style=\"text-decoration-style:solid\">http://127.0.0.1:8000</u></font>\n   <span style=\"background-color:#007166\"><font color=\"#D3D7CF\"> server </font></span>  Documentation at <font color=\"#729FCF\"><u style=\"text-decoration-style:solid\">http://127.0.0.1:8000/docs</u></font>\n\n      <span style=\"background-color:#007166\"><font color=\"#D3D7CF\"> tip </font></span>  Running in development mode, for production use:\n             <b>fastapi run</b>\n\n             Logs:\n\n     <span style=\"background-color:#007166\"><font color=\"#D3D7CF\"> INFO </font></span>  Will watch for changes in these directories:\n             <b>[</b><font color=\"#4E9A06\">&apos;/home/user/code/awesomeapp&apos;</font><b>]</b>"
+   }
+  ],
+  "retrieval_s": 0.011640500000794418,
+  "generation_s": 2.6176086999985273,
+  "total_s": 2.6292491999993217,
+  "id": "o06",
+  "type": "off_topic",
+  "gold": []
+ },
+ {
+  "question": "Comment convertir un fichier PDF en document Word ?",
+  "answer": "Je ne trouve pas la réponse dans la documentation fournie.",
+  "refused": true,
+  "sources": [
+   {
+    "score": 0.7844974398612976,
+    "source": "tutorial/request-files.md",
+    "section": "Request Files > Import `File`",
+    "text": "Import `File` and `UploadFile` from `fastapi`:"
+   },
+   {
+    "score": 0.7793488502502441,
+    "source": "tutorial/first-steps.md",
+    "section": "First Steps",
+    "text": "      <span style=\"background-color:#007166\"><font color=\"#D3D7CF\"> app </font></span>  Using import string: <font color=\"#3465A4\">main:app</font>\n\n   <span style=\"background-color:#007166\"><font color=\"#D3D7CF\"> server </font></span>  Server started at <font color=\"#729FCF\"><u style=\"text-decoration-style:solid\">http://127.0.0.1:8000</u></font>\n   <span style=\"background-color:#007166\"><font color=\"#D3D7CF\"> server </font></span>  Documentation at <font color=\"#729FCF\"><u style=\"text-decoration-style:solid\">http://127.0.0.1:8000/docs</u></font>\n\n      <span style=\"background-color:#007166\"><font color=\"#D3D7CF\"> tip </font></span>  Running in development mode, for production use:\n             <b>fastapi run</b>\n\n             Logs:\n\n     <span style=\"background-color:#007166\"><font color=\"#D3D7CF\"> INFO </font></span>  Will watch for changes in these directories:\n             <b>[</b><font color=\"#4E9A06\">&apos;/home/user/code/awesomeapp&apos;</font><b>]</b>"
+   },
+   {
+    "score": 0.7761491537094116,
+    "source": "tutorial/first-steps.md",
+    "section": "First Steps",
+    "text": "Run the live server:\n\n<div class=\"termy\">\n\n```console\n$ <font color=\"#4E9A06\">uv run fastapi</font> dev\n\n  <span style=\"background-color:#009485\"><font color=\"#D3D7CF\"> FastAPI </font></span>  Starting development server 🚀\n\n             Searching for package file structure from directories\n             with <font color=\"#3465A4\">__init__.py</font> files\n             Importing from <font color=\"#75507B\">/home/user/code/</font><font color=\"#AD7FA8\">awesomeapp</font>\n\n   <span style=\"background-color:#007166\"><font color=\"#D3D7CF\"> module </font></span>  🐍 main.py\n\n     <span style=\"background-color:#007166\"><font color=\"#D3D7CF\"> code </font></span>  Importing the FastAPI app object from the module with\n             the following code:\n\n             <u style=\"text-decoration-style:solid\">from </u><u style=\"text-decoration-style:solid\"><b>main</b></u><u style=\"text-decoration-style:solid\"> import </u><u style=\"text-decoration-style:solid\"><b>app</b></u>\n"
+   },
+   {
+    "score": 0.774210512638092,
+    "source": "tutorial/path-operation-configuration.md",
+    "section": "Path Operation Configuration > Description from docstring",
+    "text": "As descriptions tend to be long and cover multiple lines, you can declare the *path operation* description in the function <dfn title=\"a multi-line string as the first expression inside a function (not assigned to any variable) used for documentation\">docstring</dfn> and **FastAPI** will read it from there.\n\nYou can write [Markdown](https://en.wikipedia.org/wiki/Markdown) in the docstring, it will be interpreted and displayed correctly (taking into account docstring indentation).\n\nIt will be used in the interactive docs:\n\n<img src=\"/img/tutorial/path-operation-configuration/image02.png\">"
+   }
+  ],
+  "retrieval_s": 0.012125500001275213,
+  "generation_s": 2.5657029999983934,
+  "total_s": 2.5778284999996686,
+  "id": "o07",
+  "type": "off_topic",
+  "gold": []
+ },
+ {
+  "question": "Comment déployer une application FastAPI avec Docker ?",
+  "answer": "Je ne trouve pas la réponse dans la documentation fournie.",
+  "refused": true,
+  "sources": [
+   {
+    "score": 0.8858206868171692,
+    "source": "tutorial/first-steps.md",
+    "section": "First Steps > Recap, step by step > Step 6: Deploy it",
+    "text": "Deploy your app to **[FastAPI Cloud](https://fastapicloud.com)** with one command: `fastapi deploy`. 🎉"
+   },
+   {
+    "score": 0.8848927617073059,
+    "source": "tutorial/first-steps.md",
+    "section": "First Steps > Deploy your app (optional)",
+    "text": "You can optionally deploy your FastAPI app to [FastAPI Cloud](https://fastapicloud.com) with a single command. 🚀\n\n<div class=\"termy\">\n\n```console\n$ uv run fastapi deploy\n\nDeploying to FastAPI Cloud...\n\n✅ Deployment successful!\n\n🐔 Ready the chicken! Your app is ready at https://myapp.fastapicloud.dev\n```\n\n</div>\n\nThe CLI will automatically detect your FastAPI application and deploy it to the cloud. If you are not logged in, your browser will open to complete the authentication process.\n\nThat's it! Now you can access your app at that URL. ✨"
+   },
+   {
+    "score": 0.8773648738861084,
+    "source": "tutorial/first-steps.md",
+    "section": "First Steps > Recap, step by step > Step 6: Deploy it > Deploy to other cloud providers",
+    "text": "FastAPI is open source and based on standards. You can deploy FastAPI apps to any cloud provider you choose.\n\nFollow your cloud provider's guides to deploy FastAPI apps with them. 🤓"
+   },
+   {
+    "score": 0.8726147413253784,
+    "source": "tutorial/first-steps.md",
+    "section": "First Steps > Recap",
+    "text": "* Import `FastAPI`.\n* Create an `app` instance.\n* Write a **path operation decorator** using decorators like `@app.get(\"/\")`.\n* Define a **path operation function**; for example, `def root(): ...`.\n* Run the development server using the command `fastapi dev`.\n* Optionally deploy your app with `fastapi deploy`."
+   }
+  ],
+  "retrieval_s": 0.012306800001169904,
+  "generation_s": 2.4968379999991157,
+  "total_s": 2.5091448000002856,
+  "id": "o08",
+  "type": "off_corpus",
+  "gold": []
+ },
+ {
+  "question": "Comment utiliser les WebSockets avec FastAPI ?",
+  "answer": "Je ne trouve pas la réponse dans la documentation fournie.",
+  "refused": true,
+  "sources": [
+   {
+    "score": 0.8614705801010132,
+    "source": "tutorial/first-steps.md",
+    "section": "First Steps",
+    "text": "Run the live server:\n\n<div class=\"termy\">\n\n```console\n$ <font color=\"#4E9A06\">uv run fastapi</font> dev\n\n  <span style=\"background-color:#009485\"><font color=\"#D3D7CF\"> FastAPI </font></span>  Starting development server 🚀\n\n             Searching for package file structure from directories\n             with <font color=\"#3465A4\">__init__.py</font> files\n             Importing from <font color=\"#75507B\">/home/user/code/</font><font color=\"#AD7FA8\">awesomeapp</font>\n\n   <span style=\"background-color:#007166\"><font color=\"#D3D7CF\"> module </font></span>  🐍 main.py\n\n     <span style=\"background-color:#007166\"><font color=\"#D3D7CF\"> code </font></span>  Importing the FastAPI app object from the module with\n             the following code:\n\n             <u style=\"text-decoration-style:solid\">from </u><u style=\"text-decoration-style:solid\"><b>main</b></u><u style=\"text-decoration-style:solid\"> import </u><u style=\"text-decoration-style:solid\"><b>app</b></u>\n"
+   },
+   {
+    "score": 0.8578355312347412,
+    "source": "tutorial/stream-json-lines.md",
+    "section": "Stream JSON Lines > Server-Sent Events (SSE)",
+    "text": "FastAPI also has first-class support for Server-Sent Events (SSE), which are quite similar but with a couple of extra details. You can learn about them in the next chapter: [Server-Sent Events (SSE)](server-sent-events.md). 🤓"
+   },
+   {
+    "score": 0.8577636480331421,
+    "source": "tutorial/first-steps.md",
+    "section": "First Steps",
+    "text": "The simplest FastAPI file could look like this:\n\nCopy that to a file `main.py`.\n\nFastAPI has an [official extension for VS Code](https://marketplace.visualstudio.com/items?itemName=FastAPILabs.fastapi-vscode) (and Cursor), which provides a lot of features, including a path operation explorer, path operation search, CodeLens navigation in tests (jump to definition from tests), and FastAPI Cloud deployment and logs, all from your editor.\n\nRun the live server:\n\n<div class=\"termy\">"
+   },
+   {
+    "score": 0.8572086095809937,
+    "source": "tutorial/stream-json-lines.md",
+    "section": "Stream JSON Lines > Stream JSON Lines with FastAPI > Non-async *path operation functions*",
+    "text": "You can also use regular `def` functions (without `async`), and use `yield` the same way.\n\nFastAPI will make sure it's run correctly so that it doesn't block the event loop.\n\nAs in this case the function is not async, the right return type would be `Iterable[Item]`:"
+   }
+  ],
+  "retrieval_s": 0.011304900001050555,
+  "generation_s": 2.4661732999993546,
+  "total_s": 2.477478200000405,
+  "id": "o09",
+  "type": "off_corpus",
+  "gold": []
+ },
+ {
+  "question": "Comment déployer FastAPI sur Kubernetes ?",
+  "answer": "Je ne trouve pas la réponse dans la documentation fournie.",
+  "refused": true,
+  "sources": [
+   {
+    "score": 0.8864063024520874,
+    "source": "tutorial/first-steps.md",
+    "section": "First Steps > Recap, step by step > Step 6: Deploy it",
+    "text": "Deploy your app to **[FastAPI Cloud](https://fastapicloud.com)** with one command: `fastapi deploy`. 🎉"
+   },
+   {
+    "score": 0.8861411809921265,
+    "source": "tutorial/first-steps.md",
+    "section": "First Steps > Deploy your app (optional)",
+    "text": "You can optionally deploy your FastAPI app to [FastAPI Cloud](https://fastapicloud.com) with a single command. 🚀\n\n<div class=\"termy\">\n\n```console\n$ uv run fastapi deploy\n\nDeploying to FastAPI Cloud...\n\n✅ Deployment successful!\n\n🐔 Ready the chicken! Your app is ready at https://myapp.fastapicloud.dev\n```\n\n</div>\n\nThe CLI will automatically detect your FastAPI application and deploy it to the cloud. If you are not logged in, your browser will open to complete the authentication process.\n\nThat's it! Now you can access your app at that URL. ✨"
+   },
+   {
+    "score": 0.8771716356277466,
+    "source": "tutorial/first-steps.md",
+    "section": "First Steps > Recap, step by step > Step 6: Deploy it > Deploy to other cloud providers",
+    "text": "FastAPI is open source and based on standards. You can deploy FastAPI apps to any cloud provider you choose.\n\nFollow your cloud provider's guides to deploy FastAPI apps with them. 🤓"
+   },
+   {
+    "score": 0.8715588450431824,
+    "source": "tutorial/first-steps.md",
+    "section": "First Steps > Recap",
+    "text": "* Import `FastAPI`.\n* Create an `app` instance.\n* Write a **path operation decorator** using decorators like `@app.get(\"/\")`.\n* Define a **path operation function**; for example, `def root(): ...`.\n* Run the development server using the command `fastapi dev`.\n* Optionally deploy your app with `fastapi deploy`."
+   }
+  ],
+  "retrieval_s": 0.012189799999759998,
+  "generation_s": 2.371190600000773,
+  "total_s": 2.383380400000533,
+  "id": "o10",
+  "type": "off_corpus",
+  "gold": []
+ }
+]

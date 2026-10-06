@@ -1,0 +1,774 @@
+﻿id;question;reponse;passages;fidele (1/0)
+q28;Comment implémenter le flux OAuth2 avec nom d'utilisateur et mot de passe ?;"Pour implémenter le flux OAuth2 avec nom d'utilisateur et mot de passe, vous devez utiliser les outils fournis par FastAPI comme indiqué dans l'extrait [3]. Les noms de champs `username` et `password` doivent être utilisés car c'est ce que spécifie le protocole OAuth2. Ces champs doivent être envoyés en tant que données de formulaire, pas en JSON. Voici un exemple de comment cela peut être fait :
+
+```python
+from fastapi import FastAPI, Depends, HTTPException
+from fastapi.security import OAuth2PasswordRequestForm
+from pydantic import BaseModel
+
+app = FastAPI()
+
+class User(BaseModel):
+    username: str
+    email: str
+    full_name: str = None
+    disabled: bool = None
+
+# Ici, vous devriez avoir une fonction pour vérifier les identifiants
+def fake_decode_token(username: str):
+    return User(username=username)
+
+@app.post(""/login"")
+async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+    user = fake_decode_token(form_data.username)
+    if not user:
+        raise HTTPException(status_code=400, detail=""Invalid username or password"")
+    return {""access_token"": user.username, ""token_type"": ""bearer""}
+```
+
+Ce code utilise `OAuth2PasswordRequestForm` pour obtenir les `username` et `password` en tant que données de formulaire.";"[1] Now let's use the utilities provided by **FastAPI** to handle this.
+---
+[2] Now use the operation `GET` with the path `/users/me`.
+
+You will get your user's data, like:
+
+```JSON
+{
+  ""username"": ""johndoe"",
+  ""email"": ""johndoe@example.com"",
+  ""full_name"": ""John Doe"",
+  ""disabled"": false,
+  ""hashed_password"": ""fakehashedsecret""
+}
+```
+
+<img src=""/img/tutorial/security/image06.png"">
+
+If you click the lock icon and logout, and then try the same operation again, you will get an HTTP 401 error of:
+
+```JSON
+{
+  ""detail"": ""Not authenticated""
+}
+```
+---
+[3] We are going to use **FastAPI** security utilities to get the `username` and `password`.
+
+OAuth2 specifies that when using the ""password flow"" (that we are using) the client/user must send `username` and `password` fields as form data.
+
+And the spec says that the fields have to be named like that. So `user-name` or `email` wouldn't work.
+
+But don't worry, you can show it as you wish to your final users in the frontend.
+
+And your database models can use any other names you want.
+
+But for the login *path operation*, we need to use these names to be compatible with the spec (and be able to, for example, use the integrated API documentation system).
+
+The spec also states that the `username` and `password` must be sent as form data (so, no JSON here).
+---
+[4] Now let's build from the previous chapter and add the missing parts to have a complete security flow.";
+q30;Comment utiliser une classe comme dépendance ?;"Pour utiliser une classe comme dépendance, vous pouvez la déclarer en utilisant `Annotated` pour indiquer le type, comme ceci :
+
+```python
+commons: Annotated[CommonQueryParams, Depends]
+```
+
+Cela permet à votre éditeur d'environnement de comprendre le type de `commons`, offrant ainsi des suggestions de complétion et des vérifications de types [2].
+
+Vous pouvez également utiliser une version plus concise avec `Annotated` :
+
+```python
+commons: CommonQueryParams = Depends()
+```
+
+Cela indique à FastAPI de dépendre de l'instance `CommonQueryParams` sans la réécrire à l'intérieur de `Depends` [4].";"[1] Before diving deeper into the **Dependency Injection** system, let's upgrade the previous example.
+---
+[2] You could actually write just:
+
+```Python
+commons: Annotated[Any, Depends(CommonQueryParams)]
+```
+
+Prefer to use the `Annotated` version if possible.
+
+```Python
+commons = Depends(CommonQueryParams)
+```
+
+...as in:
+
+But declaring the type is encouraged as that way your editor will know what will be passed as the parameter `commons`, and then it can help you with code completion, type checks, etc:
+
+<img src=""/img/tutorial/dependencies/image02.png"">
+---
+[3] In the previous example, we were returning a `dict` from our dependency (""dependable""):
+
+But then we get a `dict` in the parameter `commons` of the *path operation function*.
+
+And we know that editors can't provide a lot of support (like completion) for `dict`s, because they can't know their keys and value types.
+
+We can do better...
+---
+[4] Prefer to use the `Annotated` version if possible.
+
+```Python
+commons: CommonQueryParams = Depends()
+```
+
+You declare the dependency as the type of the parameter, and you use `Depends()` without any parameter, instead of having to write the full class *again* inside of `Depends(CommonQueryParams)`.
+
+The same example would then look like:
+
+...and **FastAPI** will know what to do.
+
+If that seems more confusing than helpful, disregard it, you don't *need* it.
+
+It is just a shortcut. Because **FastAPI** cares about helping you minimize code repetition.";
+q03;Comment valider qu'un paramètre de chemin est un entier supérieur ou égal à 1 ?;"Pour valider qu'un paramètre de chemin est un entier supérieur ou égal à 1, vous pouvez utiliser la validation `ge=1` avec le décorateur `Path`. Par exemple :
+
+```python
+from fastapi import FastAPI, Path
+
+app = FastAPI()
+
+@app.get(""/items/{item_id}"")
+async def read_item(item_id: int = Path(..., ge=1)):
+    return {""item_id"": item_id}
+```
+
+Ici, `item_id` doit être un entier supérieur ou égal à 1 [1].";"[1] With `Query` and `Path` (and others you'll see later) you can declare number constraints.
+
+Here, with `ge=1`, `item_id` will need to be an integer number ""`g`reater than or `e`qual"" to `1`.
+---
+[2] With `Query`, `Path` (and others you haven't seen yet) you can declare metadata and string validations in the same ways as with [Query Parameters and String Validations](query-params-str-validations.md).
+
+And you can also declare numeric validations:
+
+* `gt`: `g`reater `t`han
+* `ge`: `g`reater than or `e`qual
+* `lt`: `l`ess `t`han
+* `le`: `l`ess than or `e`qual
+
+`Query`, `Path`, and other classes you will see later are subclasses of a common `Param` class.
+
+All of them share the same parameters for additional validation and metadata you have seen.
+
+When you import `Query`, `Path` and others from `fastapi`, they are actually functions.
+
+That when called, return instances of classes of the same name.
+
+So, you import `Query`, which is a function. And when you call it, it returns an instance of a class also named `Query`.
+
+These functions are there (instead of just using the classes directly) so that your editor doesn't mark errors about their types.
+---
+[3] The same applies for:
+
+* `gt`: `g`reater `t`han
+* `le`: `l`ess than or `e`qual
+---
+[4] Keep in mind that if you use `Annotated`, as you are not using function parameter default values, you won't have this problem, and you probably won't need to use `*`.";
+q20;Comment activer CORS ?;"Pour activer CORS dans FastAPI, vous devez suivre ces étapes :
+
+1. Importer `CORSMiddleware`.
+2. Créer une liste des origines autorisées (en tant que chaînes de caractères).
+3. Ajouter `CORSMiddleware` comme ""middleware"" à votre application FastAPI.
+
+Vous pouvez également spécifier si votre backend autorise les informations de session (Authorization headers, Cookies, etc.), les méthodes HTTP spécifiques (`POST`, `PUT`) ou toutes les méthodes avec le wildcard `""*""`, ainsi que les en-têtes HTTP spécifiques ou tous les en-têtes avec le wildcard `""*""`.
+
+Par exemple :
+
+```python
+from fastapi import FastAPI
+from starlette.middleware.cors import CORSMiddleware
+
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[""http://example.com"", ""http://localhost:3000""],
+    allow-Methods=[""*""],
+    allow-Headers=[""*""],
+)
+```
+
+Ces paramètres permettent de configurer explicitement les origines, méthodes et en-têtes autorisés, ce qui est nécessaire pour que les navigateurs puissent utiliser ces ressources dans un contexte Cross-Domain. [2] [4]";"[1] [CORS or ""Cross-Origin Resource Sharing""](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) refers to the situations when a frontend running in a browser has JavaScript code that communicates with a backend, and the backend is in a different ""origin"" than the frontend.
+---
+[2] These are any `OPTIONS` request with `Origin` and `Access-Control-Request-Method` headers.
+
+In this case the middleware will intercept the incoming request and respond with appropriate CORS headers, and either a `200` or `400` response for informational purposes.
+---
+[3] For more info about <abbr title=""Cross-Origin Resource Sharing"">CORS</abbr>, check the [Mozilla CORS documentation](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS).
+
+You could also use `from starlette.middleware.cors import CORSMiddleware`.
+
+**FastAPI** provides several middlewares in `fastapi.middleware` just as a convenience for you, the developer. But most of the available middlewares come directly from Starlette.
+---
+[4] You can configure it in your **FastAPI** application using the `CORSMiddleware`.
+
+* Import `CORSMiddleware`.
+* Create a list of allowed origins (as strings).
+* Add it as a ""middleware"" to your **FastAPI** application.
+
+You can also specify whether your backend allows:
+
+* Credentials (Authorization headers, Cookies, etc).
+* Specific HTTP methods (`POST`, `PUT`) or all of them with the wildcard `""*""`.
+* Specific HTTP headers or all of them with the wildcard `""*""`.
+
+The default parameters used by the `CORSMiddleware` implementation are restrictive by default, so you'll need to explicitly enable particular origins, methods, or headers, in order for browsers to be permitted to use them in a Cross-Domain context.
+
+The following arguments are supported:";
+q36;Comment utiliser des types comme UUID ou datetime dans les paramètres ?;[2] Vous pouvez utiliser des types plus complexes comme `UUID` ou `datetime` de la même manière que les types simples comme `int`, `float`, `str` ou `bool`. Vous continuerez à bénéficier des mêmes fonctionnalités, notamment la conversion de données à partir des requêtes entrantes, la validation des données, etc.;"[1] Create form parameters the same way you would for `Body` or `Query`:
+
+For example, in one of the ways the OAuth2 specification can be used (called ""password flow"") it is required to send a `username` and `password` as form fields.
+
+The <dfn title=""specification"">spec</dfn> requires the fields to be exactly named `username` and `password`, and to be sent as form fields, not JSON.
+
+With `Form` you can declare the same configurations as with `Body` (and `Query`, `Path`, `Cookie`), including validation, examples, an alias (e.g. `user-name` instead of `username`), etc.
+
+`Form` is a class that inherits directly from `Body`.
+
+To declare form bodies, you need to use `Form` explicitly, because without it the parameters would be interpreted as query parameters or body (JSON) parameters.
+---
+[2] Up to now, you have been using common data types, like:
+
+* `int`
+* `float`
+* `str`
+* `bool`
+
+But you can also use more complex data types.
+
+And you will still have the same features as seen up to now:
+
+* Great editor support.
+* Data conversion from incoming requests.
+* Data conversion for response data.
+* Data validation.
+* Automatic annotation and documentation.
+---
+[3] ...this would work:
+
+```JSON
+{
+    ""item_id"": ""foo-item"",
+    ""needy"": ""sooooneedy""
+}
+```
+
+And of course, you can define some parameters as required, some as having a default value, and some entirely optional:
+
+In this case, there are 3 query parameters:
+
+* `needy`, a required `str`.
+* `skip`, an `int` with a default value of `0`.
+* `limit`, an optional `int`.
+
+You could also use `Enum`s the same way as with [Path Parameters](path-params.md#predefined-values).
+---
+[4] When you declare a default value for non-path parameters (for now, we have only seen query parameters), then it is not required.
+
+If you don't want to add a specific value but just make it optional, set the default as `None`.
+
+But when you want to make a query parameter required, you can just not declare any default value:
+
+Here the query parameter `needy` is a required query parameter of type `str`.
+
+If you open in your browser a URL like:
+
+```
+http://127.0.0.1:8000/items/foo-item
+```
+
+...without adding the required parameter `needy`, you will see an error like:
+
+```JSON
+{
+  ""detail"": [
+    {
+      ""type"": ""missing"",
+      ""loc"": [
+        ""query"",
+        ""needy""
+      ],
+      ""msg"": ""Field required"",
+      ""input"": null
+    }
+  ]
+}
+```
+
+As `needy` is a required parameter, you would need to set it in the URL:
+
+```
+http://127.0.0.1:8000/items/foo-item?needy=sooooneedy
+```
+
+...this would work:
+
+```JSON
+{
+    ""item_id"": ""foo-item"",
+    ""needy"": ""sooooneedy""
+}
+```";
+q35;Comment ajouter des validations à un champ d'un modèle Pydantic ?;"Vous pouvez utiliser Pydantic's `Field` pour déclarer des validations supplémentaires et des métadonnées pour les attributs d'un modèle. Par exemple :
+
+```python
+from pydantic import Field
+
+class Item(BaseModel):
+    name: str = Field(..., min_length=1)
+```
+
+Ici, `Field(..., min_length=1)` ajoute une validation pour s'assurer que la longueur du champ `name` est au moins de 1 caractère. [1]";"[1] You can use Pydantic's `Field` to declare extra validations and metadata for model attributes.
+
+You can also use the extra keyword arguments to pass additional JSON Schema metadata.
+---
+[2] The same way you can declare additional validation and metadata in *path operation function* parameters with `Query`, `Path` and `Body`, you can declare validation and metadata inside of Pydantic models using Pydantic's `Field`.
+---
+[3] All the data validation is performed under the hood by [Pydantic](https://pydantic.dev/docs/), so you get all the benefits from it. And you know you are in good hands.
+
+You can use the same type declarations with `str`, `float`, `bool` and many other complex data types.
+
+Several of these are explored in the next chapters of the tutorial.
+---
+[4] You can declare `examples` for a Pydantic model that will be added to the generated JSON Schema.
+
+That extra info will be added as-is to the output **JSON Schema** for that model, and it will be used in the API docs.
+
+You can use the attribute `model_config` that takes a `dict` as described in [Pydantic's docs: Configuration](https://pydantic.dev/docs/validation/latest/api/pydantic/config/).
+
+You can set `""json_schema_extra""` with a `dict` containing any additional data you would like to show up in the generated JSON Schema, including `examples`.
+
+You could use the same technique to extend the JSON Schema and add your own custom extra info.
+
+For example you could use it to add metadata for a frontend user interface, etc.
+
+OpenAPI 3.1.0 (used since FastAPI 0.99.0) added support for `examples`, which is part of the **JSON Schema** standard.";
+q29;Comment utiliser une dépendance avec yield ?;"Pour utiliser une dépendance avec `yield`, vous pouvez suivre ces étapes :
+
+1. Utilisez une fonction `async` ou régulière.
+2. Placez le code qui doit se dérouler avant la réponse jusqu'au `yield`.
+3. Le code après le `yield` sera exécuté après la réponse.
+4. Le `yield` injecte la valeur retournée dans les opérations de chemin et d'autres dépendances.
+5. Vous pouvez avoir des dépendances imbriquées avec `yield`, et **FastAPI** s'assurera que le code d'exit est exécuté dans le bon ordre.
+
+Voici un exemple basé sur les extraits fournis :
+
+```python
+async def get_db_session() -> Session:
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+```
+
+Ce code crée une session de base de données, l'injecte dans les opérations de chemin, et la ferme après la réponse.";"[1] For example, you could use this to create a database session and close it after finishing.
+
+Only the code prior to and including the `yield` statement is executed before creating a response:
+
+The yielded value is what is injected into *path operations* and other dependencies:
+
+The code following the `yield` statement is executed after the response:
+
+You can use `async` or regular functions.
+
+**FastAPI** will do the right thing with each, the same as with normal dependencies.
+---
+[2] ```mermaid
+sequenceDiagram
+
+participant client as Client
+participant dep_req as Dep scope=""request""
+participant dep_func as Dep scope=""function""
+participant operation as Path Operation
+
+    client ->> dep_req: Start request
+    Note over dep_req: Run code up to yield
+    dep_req ->> dep_func: Pass dependency
+    Note over dep_func: Run code up to yield
+    dep_func ->> operation: Run path operation with dependency
+    operation ->> dep_func: Return from path operation
+    Note over dep_func: Run code after yield
+    Note over dep_func: ✅ Dependency closed
+    dep_func ->> client: Send response to client
+    Note over client: Response sent
+    Note over dep_req: Run code after yield
+    Note over dep_req: ✅ Dependency closed
+```
+---
+[3] You can have sub-dependencies and ""trees"" of sub-dependencies of any size and shape, and any or all of them can use `yield`.
+
+**FastAPI** will make sure that the ""exit code"" in each dependency with `yield` is run in the correct order.
+
+For example, `dependency_c` can have a dependency on `dependency_b`, and `dependency_b` on `dependency_a`:
+
+And all of them can use `yield`.
+
+In this case `dependency_c`, to execute its exit code, needs the value from `dependency_b` (here named `dep_b`) to still be available.
+
+And, in turn, `dependency_b` needs the value from `dependency_a` (here named `dep_a`) to be available for its exit code.
+
+The same way, you could have some dependencies with `yield` and some other dependencies with `return`, and have some of those depend on some of the others.
+
+And you could have a single dependency that requires several other dependencies with `yield`, etc.
+
+You can have any combinations of dependencies that you want.
+---
+[4] If you catch an exception in a dependency with `yield`, unless you are raising another `HTTPException` or similar, **you should re-raise the original exception**.
+
+You can re-raise the same exception using `raise`:
+
+Now the client will get the same *HTTP 500 Internal Server Error* response, but the server will have our custom `InternalError` in the logs. 😎";
+q23;Comment ajouter un middleware personnalisé ?;"Pour ajouter un middleware personnalisé, vous utilisez le décorateur `@app.middleware(""http"")` sur une fonction. Voici un exemple basé sur l'extrait fourni :
+
+```python
+from fastapi import FastAPI, Request
+from starlette.middleware.base import BaseHTTPMiddleware
+
+app = FastAPI()
+
+class CustomMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        # Code à exécuter avant la requête
+        print(""Middleware avant la requête"")
+
+        response = await call_next(request)
+
+        # Code à exécuter après la réponse
+        print(""Middleware après la réponse"")
+
+        return response
+
+app.add_middleware(CustomMiddleware)
+```
+
+Ce middleware personnalisé est ajouté à l'aide de `app.add_middleware(CustomMiddleware)`. Le décorateur `@app.middleware(""http"")` est utilisé pour indiquer que ce middleware s'applique à toutes les requêtes HTTP.";"[1] To create a middleware you use the decorator `@app.middleware(""http"")` on top of a function.
+
+The middleware function receives:
+
+* The `request`.
+* A function `call_next` that will receive the `request` as a parameter.
+    * This function will pass the `request` to the corresponding *path operation*.
+    * Then it returns the `response` generated by the corresponding *path operation*.
+* You can then further modify the `response` before returning it.
+
+Keep in mind that custom proprietary headers can be added [using the `X-` prefix](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers).
+
+But if you have custom headers that you want a client in a browser to be able to see, you need to add them to your CORS configurations ([CORS (Cross-Origin Resource Sharing)](cors.md)) using the parameter `expose_headers` documented in [Starlette's CORS docs](https://starlette.dev/middleware/#corsmiddleware).
+
+You could also use `from starlette.requests import Request`.
+---
+[2] You could also use `from starlette.requests import Request`.
+
+**FastAPI** provides it as a convenience for you, the developer. But it comes directly from Starlette.
+---
+[3] When you add multiple middlewares using either `@app.middleware()` decorator or `app.add_middleware()` method, each new middleware wraps the application, forming a stack. The last middleware added is the *outermost*, and the first is the *innermost*.
+
+On the request path, the *outermost* middleware runs first.
+
+On the response path, it runs last.
+
+For example:
+
+```Python
+app.add_middleware(MiddlewareA)
+app.add_middleware(MiddlewareB)
+```
+
+This results in the following execution order:
+
+* **Request**: MiddlewareB → MiddlewareA → route
+
+* **Response**: route → MiddlewareA → MiddlewareB
+
+This stacking behavior ensures that middlewares are executed in a predictable and controllable order.
+---
+[4] You can add middleware to **FastAPI** applications.
+
+A ""middleware"" is a function that works with every **request** before it is processed by any specific *path operation*. And also with every **response** before returning it.
+
+* It takes each **request** that comes to your application.
+* It can then do something to that **request** or run any needed code.
+* Then it passes the **request** to be processed by the rest of the application (by some *path operation*).
+* It then takes the **response** generated by the application (by some *path operation*).
+* It can do something to that **response** or run any needed code.
+* Then it returns the **response**.
+
+If you have dependencies with `yield`, the exit code will run *after* the middleware.
+
+If there were any background tasks (covered in the [Background Tasks](background-tasks.md) section, you will see it later), they will run *after* all the middleware.";
+q34;Comment convertir un modèle en données compatibles JSON ?;Pour convertir un modèle en données compatibles JSON, vous pouvez utiliser la fonction `jsonable_encoder()` fournie par FastAPI [1] et [3]. Cette fonction prend un objet (par exemple, un modèle Pydantic) et retourne une version compatible JSON, telle qu'une `dict` ou une `str`. Par exemple, un objet `datetime` serait converti en une chaîne de caractères au format ISO [4].;"[1] There are some cases where you might need to convert a data type (like a Pydantic model) to something compatible with JSON (like a `dict`, `list`, etc).
+
+For example, if you need to store it in a database.
+
+For that, **FastAPI** provides a `jsonable_encoder()` function.
+---
+[2] You can return a `dict`, `list`, singular values as `str`, `int`, etc.
+
+You can also return Pydantic models (you'll see more about that later).
+
+There are many other objects and models that will be automatically converted to JSON (including ORMs, etc). Try using your favorite ones, it's highly probable that they are already supported.
+---
+[3] Note that the `TestClient` receives data that can be converted to JSON, not Pydantic models.
+
+If you have a Pydantic model in your test and you want to send its data to the application during testing, you can use the `jsonable_encoder` described in [JSON Compatible Encoder](encoder.md).
+---
+[4] Let's imagine that you have a database `fake_db` that only receives JSON compatible data.
+
+For example, it doesn't receive `datetime` objects, as those are not compatible with JSON.
+
+So, a `datetime` object would have to be converted to a `str` containing the data in [ISO format](https://en.wikipedia.org/wiki/ISO_8601).
+
+The same way, this database wouldn't receive a Pydantic model (an object with attributes), only a `dict`.
+
+You can use `jsonable_encoder` for that.
+
+It receives an object, like a Pydantic model, and returns a JSON compatible version:
+
+In this example, it would convert the Pydantic model to a `dict`, and the `datetime` to a `str`.
+
+The result of calling it is something that can be encoded with the Python standard [`json.dumps()`](https://docs.python.org/3/library/json.html#json.dumps).";
+q15;Comment changer le code HTTP de la réponse ?;"Vous pouvez définir le code HTTP de la réponse en utilisant la clé `status_code` dans la configuration de votre opération de chemin. Vous pouvez passer directement le code `int`, comme `404`, ou utiliser les constantes de raccourci dans `status` :
+
+```python
+from fastapi import status
+
+# Exemple
+@app.get(""/example"", status_code=status.HTTP_404_NOT_FOUND)
+async def example():
+    return {""message"": ""Not found""}
+```
+
+Cela utilisera le code de statut HTTP `404` dans la réponse et sera ajouté au schéma OpenAPI [1][4].";"[1] If you already know what HTTP status codes are, skip to the next section.
+
+In HTTP, you send a numeric status code of 3 digits as part of the response.
+
+These status codes have an associated name to help recognize them, but the important part is the number.
+
+In short:
+---
+[2] To return HTTP responses with errors to the client you use `HTTPException`.
+---
+[3] * `500 - 599` are for server errors. You almost never use them directly. When something goes wrong at some part in your application code, or server, it will automatically return one of these status codes.
+
+To know more about each status code and which code is for what, check the [<abbr title=""Mozilla Developer Network"">MDN</abbr> documentation about HTTP status codes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status).
+---
+[4] You can define the (HTTP) `status_code` to be used in the response of your *path operation*.
+
+You can pass directly the `int` code, like `404`.
+
+But if you don't remember what each number code is for, you can use the shortcut constants in `status`:
+
+That status code will be used in the response and will be added to the OpenAPI schema.
+
+You could also use `from starlette import status`.
+
+**FastAPI** provides the same `starlette.status` as `fastapi.status` just as a convenience for you, the developer. But it comes directly from Starlette.";
+q22;Comment tester une application avec TestClient ?;"Pour tester une application FastAPI avec TestClient, vous devez suivre ces étapes [1] :
+
+1. Installer `httpx` :
+```console
+$ uv add httpx
+```
+
+2. Importer `TestClient` :
+```python
+from fastapi.testclient import TestClient
+```
+
+3. Créer un `TestClient` en passant votre application FastAPI à celui-ci.
+
+4. Écrire des fonctions de test avec un nom commençant par `test_` (convention standard `pytest`).
+
+5. Utiliser le `TestClient` de la même manière que vous le feriez avec `httpx`.
+
+6. Écrire des déclarations `assert` avec des expressions Python standard pour vérifier les conditions.
+
+7. Les appels au client sont des appels normaux, pas `await`.
+
+Cela vous permet d'utiliser directement `pytest` sans complications.";"[1] To use `TestClient`, first install [`httpx`](https://www.python-httpx.org).
+
+Add it to your project:
+
+```console
+$ uv add httpx
+```
+
+Import `TestClient`.
+
+Create a `TestClient` by passing your **FastAPI** application to it.
+
+Create functions with a name that starts with `test_` (this is a standard `pytest` convention).
+
+Use the `TestClient` object the same way as you do with `httpx`.
+
+Write simple `assert` statements with the standard Python expressions that you need to check (again, standard `pytest`).
+
+Notice that the testing functions are normal `def`, not `async def`.
+
+And the calls to the client are also normal calls, not using `await`.
+
+This allows you to use `pytest` directly without complications.
+
+You could also use `from starlette.testclient import TestClient`.
+
+**FastAPI** provides the same `starlette.testclient` as `fastapi.testclient` just as a convenience for you, the developer. But it comes directly from Starlette.
+---
+[2] If you want to call `async` functions in your tests apart from sending requests to your FastAPI application (e.g. asynchronous database functions), have a look at the [Async Tests](../advanced/async-tests.md) in the advanced tutorial.
+---
+[3] Note that the `TestClient` receives data that can be converted to JSON, not Pydantic models.
+
+If you have a Pydantic model in your test and you want to send its data to the application during testing, you can use the `jsonable_encoder` described in [JSON Compatible Encoder](encoder.md).
+---
+[4] Thanks to [Starlette](https://starlette.dev/testclient/), testing **FastAPI** applications is easy and enjoyable.
+
+It is based on [HTTPX](https://www.python-httpx.org), which in turn is designed based on Requests, so it's very familiar and intuitive.
+
+With it, you can use [pytest](https://docs.pytest.org/) directly with **FastAPI**.";
+q32;Comment déclarer des sous-dépendances ?;"Pour déclarer des sous-dépendances, vous pouvez créer une fonction dépendance (un ""dependable"") qui elle-même déclare une autre dépendance (un ""dependant""). Par exemple, la fonction ""dependable"" peut dépendre de `query_extractor` et assigner sa valeur à un paramètre `q`, tout en déclarant également un cookie optionnel `last_query` de type `str` [1]. FastAPI gère la résolution de ces dépendances de manière récursive [3].";"[1] Then you can create another dependency function (a ""dependable"") that at the same time declares a dependency of its own (so it is a ""dependant"" too):
+
+Let's focus on the parameters declared:
+
+* Even though this function is a dependency (""dependable"") itself, it also declares another dependency (it ""depends"" on something else).
+    * It depends on the `query_extractor`, and assigns the value returned by it to the parameter `q`.
+* It also declares an optional `last_query` cookie, as a `str`.
+    * If the user didn't provide any query `q`, we use the last query used, which we saved to a cookie before.
+---
+[2] You could create a first dependency (""dependable"") like:
+
+It declares an optional query parameter `q` as a `str`, and then it just returns it.
+
+This is quite simple (not very useful), but will help us focus on how the sub-dependencies work.
+---
+[3] You can create dependencies that have **sub-dependencies**.
+
+They can be as **deep** as you need them to be.
+
+**FastAPI** will take care of solving them.
+---
+[4] They can declare request requirements (like headers) or other sub-dependencies:";
+q08;Comment lire un cookie envoyé par le client ?;"Pour lire un cookie envoyé par le client, vous devez déclarer les paramètres de cookie dans un modèle Pydantic et utiliser le type `Cookie` pour chaque paramètre de cookie. FastAPI extrait ensuite les données de chaque champ à partir des cookies reçus dans la requête et vous donne le modèle Pydantic que vous avez défini [3].
+
+Par exemple :
+
+```python
+from fastapi import FastAPI, Cookie
+
+app = FastAPI()
+
+@app.get(""/items/"")
+async def read_items(ads_id: str = Cookie(None)):
+    return {""ads_id"": ads_id}
+```
+
+Ici, `ads_id` est un cookie que vous pouvez lire dans votre route.";"[1] For example, if the client tries to send a `santa_tracker` cookie with a value of `good-list-please`, the client will receive an **error** response telling them that the `santa_tracker` <dfn title=""Santa disapproves the lack of cookies. 🎅 Okay, no more cookie jokes."">cookie is not allowed</dfn>:
+
+```json
+{
+    ""detail"": [
+        {
+            ""type"": ""extra_forbidden"",
+            ""loc"": [""cookie"", ""santa_tracker""],
+            ""msg"": ""Extra inputs are not permitted"",
+            ""input"": ""good-list-please"",
+        }
+    ]
+}
+```
+---
+[2] In some special use cases (probably not very common), you might want to **restrict** the cookies that you want to receive.
+
+Your API now has the power to control its own <dfn title=""This is a joke, just in case. It has nothing to do with cookie consents, but it's funny that even the API can now reject the poor cookies. Have a cookie. 🍪"">cookie consent</dfn>. 🤪🍪
+
+You can use Pydantic's model configuration to `forbid` any `extra` fields:
+
+If a client tries to send some **extra cookies**, they will receive an **error** response.
+
+Poor cookie banners with all their effort to get your consent for the <dfn title=""This is another joke. Don't pay attention to me. Have some coffee for your cookie. ☕"">API to reject it</dfn>. 🍪
+---
+[3] Declare the **cookie** parameters that you need in a **Pydantic model**, and then declare the parameter as `Cookie`:
+
+**FastAPI** will **extract** the data for **each field** from the **cookies** received in the request and give you the Pydantic model you defined.
+---
+[4] You can see the defined cookies in the docs UI at `/docs`:
+
+<div class=""screenshot"">
+<img src=""/img/tutorial/cookie-param-models/image01.png"">
+</div>
+
+Have in mind that, as **browsers handle cookies** in special ways and behind the scenes, they **don't** easily allow **JavaScript** to touch them.
+
+If you go to the **API docs UI** at `/docs` you will be able to see the **documentation** for cookies for your *path operations*.
+
+But even if you **fill the data** and click ""Execute"", because the docs UI works with **JavaScript**, the cookies won't be sent, and you will see an **error** message as if you didn't write any values.";
+q40;Comment ajouter des tags à une opération pour la documentation ?;"Vous pouvez ajouter des tags à une opération en passant le paramètre `tags` avec une liste de `str` à votre *path operation*. Ces tags seront ajoutés au schéma OpenAPI et utilisés par les interfaces de documentation automatiques [1].
+
+Pour fournir des métadonnées supplémentaires pour ces tags, vous pouvez utiliser le paramètre `openapi_tags` qui prend une liste de dictionnaires, chacun contenant des informations comme `name`, `description` et `externalDocs` [2] [3].";"[1] You can add tags to your *path operation*, pass the parameter `tags` with a `list` of `str` (commonly just one `str`):
+
+They will be added to the OpenAPI schema and used by the automatic documentation interfaces:
+
+<img src=""/img/tutorial/path-operation-configuration/image01.png"">
+---
+[2] You can also add additional metadata for the different tags used to group your path operations with the parameter `openapi_tags`.
+
+It takes a list containing one dictionary for each tag.
+
+Each dictionary can contain:
+
+* `name` (**required**): a `str` with the same tag name you use in the `tags` parameter in your *path operations* and `APIRouter`s.
+* `description`: a `str` with a short description for the tag. It can have Markdown and will be shown in the docs UI.
+* `externalDocs`: a `dict` describing external documentation with:
+    * `description`: a `str` with a short description for the external docs.
+    * `url` (**required**): a `str` with the URL for the external documentation.
+---
+[3] Let's try that in an example with tags for `users` and `items`.
+
+Create metadata for your tags and pass it to the `openapi_tags` parameter:
+
+Notice that you can use Markdown inside of the descriptions, for example ""login"" will be shown in bold (**login**) and ""fancy"" will be shown in italics (_fancy_).
+
+You don't have to add metadata for all the tags that you use.
+---
+[4] Use the `tags` parameter with your *path operations* (and `APIRouter`s) to assign them to different tags:
+
+Read more about tags in [Path Operation Configuration](path-operation-configuration.md#tags).";
+q05;Comment recevoir un corps de requête JSON avec un modèle Pydantic ?;"Pour recevoir un corps de requête JSON avec un modèle Pydantic, vous pouvez utiliser la fonction `jsonable_encoder` décrite dans l'extrait [1]. Cette fonction permet de convertir un modèle Pydantic en données JSON compatibles, ce qui peut ensuite être utilisé avec `TestClient` pour envoyer des données au cours des tests.
+
+Par exemple, si vous avez un modèle Pydantic dans vos tests et que vous souhaitez envoyer ses données à l'application pendant les tests, vous pouvez utiliser `jsonable_encoder` pour convertir le modèle en données JSON avant de l'utiliser avec `TestClient`.";"[1] Note that the `TestClient` receives data that can be converted to JSON, not Pydantic models.
+
+If you have a Pydantic model in your test and you want to send its data to the application during testing, you can use the `jsonable_encoder` described in [JSON Compatible Encoder](encoder.md).
+---
+[2] You can return a `dict`, `list`, singular values as `str`, `int`, etc.
+
+You can also return Pydantic models (you'll see more about that later).
+
+There are many other objects and models that will be automatically converted to JSON (including ORMs, etc). Try using your favorite ones, it's highly probable that they are already supported.
+---
+[3] You can also declare a body as a `dict` with keys of some type and values of some other type.
+
+This way, you don't have to know beforehand what the valid field/attribute names are (as would be the case with Pydantic models).
+
+This would be useful if you want to receive keys that you don't already know.
+
+---
+
+Another useful case is when you want to have keys of another type (e.g., `int`).
+
+That's what we are going to see here.
+
+In this case, you would accept any `dict` as long as it has `int` keys with `float` values:
+
+Keep in mind that JSON only supports `str` as keys.
+
+But Pydantic has automatic data conversion.
+
+This means that, even though your API clients can only send strings as keys, as long as those strings contain pure integers, Pydantic will convert them and validate them.
+
+And the `dict` you receive as `weights` will actually have `int` keys and `float` values.
+---
+[4] You can use Pydantic's `Field` to declare extra validations and metadata for model attributes.
+
+You can also use the extra keyword arguments to pass additional JSON Schema metadata.";
