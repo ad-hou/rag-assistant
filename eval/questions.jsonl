@@ -1,0 +1,54 @@
+{"id": "q01", "question": "Comment déclarer un paramètre de requête optionnel ?", "type": "in_corpus", "gold": ["tutorial/query-params.md"]}
+{"id": "q02", "question": "Comment imposer une longueur minimale à un paramètre de requête ?", "type": "in_corpus", "gold": ["tutorial/query-params-str-validations.md"]}
+{"id": "q03", "question": "Comment valider qu'un paramètre de chemin est un entier supérieur ou égal à 1 ?", "type": "in_corpus", "gold": ["tutorial/path-params-numeric-validations.md"]}
+{"id": "q04", "question": "Comment déclarer le type d'un paramètre de chemin ?", "type": "in_corpus", "gold": ["tutorial/path-params.md"]}
+{"id": "q05", "question": "Comment recevoir un corps de requête JSON avec un modèle Pydantic ?", "type": "in_corpus", "gold": ["tutorial/body.md"]}
+{"id": "q06", "question": "Comment mettre à jour partiellement une ressource avec PATCH ?", "type": "in_corpus", "gold": ["tutorial/body-updates.md"]}
+{"id": "q07", "question": "Comment imbriquer des modèles Pydantic dans un corps de requête ?", "type": "in_corpus", "gold": ["tutorial/body-nested-models.md"]}
+{"id": "q08", "question": "Comment lire un cookie envoyé par le client ?", "type": "in_corpus", "gold": ["tutorial/cookie-params.md"]}
+{"id": "q09", "question": "Comment lire un en-tête HTTP de la requête ?", "type": "in_corpus", "gold": ["tutorial/header-params.md"]}
+{"id": "q10", "question": "Comment regrouper plusieurs paramètres de requête dans un modèle Pydantic ?", "type": "in_corpus", "gold": ["tutorial/query-param-models.md"]}
+{"id": "q11", "question": "Comment téléverser un fichier ?", "type": "in_corpus", "gold": ["tutorial/request-files.md"]}
+{"id": "q12", "question": "Comment recevoir des données de formulaire ?", "type": "in_corpus", "gold": ["tutorial/request-forms.md"]}
+{"id": "q13", "question": "Comment recevoir à la fois un fichier et des champs de formulaire ?", "type": "in_corpus", "gold": ["tutorial/request-forms-and-files.md"]}
+{"id": "q14", "question": "Comment filtrer les données renvoyées par une route avec response_model ?", "type": "in_corpus", "gold": ["tutorial/response-model.md"]}
+{"id": "q15", "question": "Comment changer le code HTTP de la réponse ?", "type": "in_corpus", "gold": ["tutorial/response-status-code.md"]}
+{"id": "q16", "question": "Comment renvoyer une erreur HTTP 404 depuis une route ?", "type": "in_corpus", "gold": ["tutorial/handling-errors.md"]}
+{"id": "q17", "question": "Comment ajouter un exemple de données dans le schéma OpenAPI ?", "type": "in_corpus", "gold": ["tutorial/schema-extra-example.md"]}
+{"id": "q18", "question": "Comment exécuter une tâche en arrière-plan après l'envoi de la réponse ?", "type": "in_corpus", "gold": ["tutorial/background-tasks.md"]}
+{"id": "q19", "question": "Comment structurer une grosse application en plusieurs fichiers ?", "type": "in_corpus", "gold": ["tutorial/bigger-applications.md"]}
+{"id": "q20", "question": "Comment activer CORS ?", "type": "in_corpus", "gold": ["tutorial/cors.md"]}
+{"id": "q21", "question": "Comment servir des fichiers statiques ?", "type": "in_corpus", "gold": ["tutorial/static-files.md"]}
+{"id": "q22", "question": "Comment tester une application avec TestClient ?", "type": "in_corpus", "gold": ["tutorial/testing.md"]}
+{"id": "q23", "question": "Comment ajouter un middleware personnalisé ?", "type": "in_corpus", "gold": ["tutorial/middleware.md"]}
+{"id": "q24", "question": "Comment lancer mon application dans un débogueur ?", "type": "in_corpus", "gold": ["tutorial/debugging.md"]}
+{"id": "q25", "question": "Comment utiliser une base de données SQL avec SQLModel ?", "type": "in_corpus", "gold": ["tutorial/sql-databases.md"]}
+{"id": "q26", "question": "Comment protéger une route avec un token JWT ?", "type": "in_corpus", "gold": ["tutorial/security/oauth2-jwt.md"]}
+{"id": "q27", "question": "Comment récupérer l'utilisateur courant dans une route sécurisée ?", "type": "in_corpus", "gold": ["tutorial/security/get-current-user.md"]}
+{"id": "q28", "question": "Comment implémenter le flux OAuth2 avec nom d'utilisateur et mot de passe ?", "type": "in_corpus", "gold": ["tutorial/security/simple-oauth2.md"]}
+{"id": "q29", "question": "Comment utiliser une dépendance avec yield ?", "type": "in_corpus", "gold": ["tutorial/dependencies/dependencies-with-yield.md"]}
+{"id": "q30", "question": "Comment utiliser une classe comme dépendance ?", "type": "in_corpus", "gold": ["tutorial/dependencies/classes-as-dependencies.md"]}
+{"id": "q31", "question": "Comment appliquer une dépendance à toute l'application ?", "type": "in_corpus", "gold": ["tutorial/dependencies/global-dependencies.md", "tutorial/dependencies/dependencies-in-path-operation-decorators.md"]}
+{"id": "q32", "question": "Comment déclarer des sous-dépendances ?", "type": "in_corpus", "gold": ["tutorial/dependencies/sub-dependencies.md"]}
+{"id": "q33", "question": "Comment ajouter des métadonnées et une description à l'API ?", "type": "in_corpus", "gold": ["tutorial/metadata.md"]}
+{"id": "q34", "question": "Comment convertir un modèle en données compatibles JSON ?", "type": "in_corpus", "gold": ["tutorial/encoder.md"]}
+{"id": "q35", "question": "Comment ajouter des validations à un champ d'un modèle Pydantic ?", "type": "in_corpus", "gold": ["tutorial/body-fields.md"]}
+{"id": "q36", "question": "Comment utiliser des types comme UUID ou datetime dans les paramètres ?", "type": "in_corpus", "gold": ["tutorial/extra-data-types.md"]}
+{"id": "q37", "question": "Comment éviter de dupliquer des champs entre plusieurs modèles ?", "type": "in_corpus", "gold": ["tutorial/extra-models.md"]}
+{"id": "q38", "question": "Comment envoyer des événements en continu au client ?", "type": "in_corpus", "gold": ["tutorial/server-sent-events.md"]}
+{"id": "q39", "question": "Comment diffuser des données en JSON Lines ?", "type": "in_corpus", "gold": ["tutorial/stream-json-lines.md"]}
+{"id": "q40", "question": "Comment ajouter des tags à une opération pour la documentation ?", "type": "in_corpus", "gold": ["tutorial/path-operation-configuration.md"]}
+{"id": "q41", "question": "Comment déclarer les en-têtes attendus avec un modèle Pydantic ?", "type": "in_corpus", "gold": ["tutorial/header-param-models.md"]}
+{"id": "q42", "question": "Comment déclarer les cookies attendus avec un modèle Pydantic ?", "type": "in_corpus", "gold": ["tutorial/cookie-param-models.md"]}
+{"id": "q43", "question": "Comment recevoir un formulaire à l'aide d'un modèle Pydantic ?", "type": "in_corpus", "gold": ["tutorial/request-form-models.md"]}
+{"id": "q44", "question": "Comment déclarer plusieurs paramètres de corps dans une même route ?", "type": "in_corpus", "gold": ["tutorial/body-multiple-params.md"]}
+{"id": "o01", "question": "Quelle est la recette de la tarte aux pommes ?", "type": "off_topic", "gold": []}
+{"id": "o02", "question": "Quelle est la capitale de l'Australie ?", "type": "off_topic", "gold": []}
+{"id": "o03", "question": "Comment entraîner un réseau de neurones avec PyTorch ?", "type": "off_topic", "gold": []}
+{"id": "o04", "question": "Quel temps fait-il à Paris demain ?", "type": "off_topic", "gold": []}
+{"id": "o05", "question": "Comment fonctionne le chiffrement RSA ?", "type": "off_topic", "gold": []}
+{"id": "o06", "question": "Qui a gagné la Coupe du monde de football en 2018 ?", "type": "off_topic", "gold": []}
+{"id": "o07", "question": "Comment convertir un fichier PDF en document Word ?", "type": "off_topic", "gold": []}
+{"id": "o08", "question": "Comment déployer une application FastAPI avec Docker ?", "type": "off_corpus", "gold": []}
+{"id": "o09", "question": "Comment utiliser les WebSockets avec FastAPI ?", "type": "off_corpus", "gold": []}
+{"id": "o10", "question": "Comment déployer FastAPI sur Kubernetes ?", "type": "off_corpus", "gold": []}
